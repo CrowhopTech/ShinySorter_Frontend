@@ -1,5 +1,5 @@
 
-import { Question } from '../../../../../src/rest/questions';
+import { Question } from '../../../../src/rest/questions';
 
 // Input: list of all questions, current question ORDERING number
 export function getQuestionInfo(questions: Question[], currentNum: number): { prevQuestion: Question | null, currentQuestion: Question | null, nextQuestion: Question | null, percentFinished: number } {

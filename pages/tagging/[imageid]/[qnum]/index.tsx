@@ -10,10 +10,10 @@ import {
   Divider,
 } from '@chakra-ui/react';
 import { GetServerSideProps, GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
-import QuestionSelect from '../../../../../src/components/questionselect';
-import QuestionComplete from '../../../../../src/components/questioncomplete';
-import { Question, listQuestions } from '../../../../../src/rest/questions';
-import Buttons from '../../../../../src/components/buttons';
+import QuestionSelect from '../../../../src/components/questionselect';
+import QuestionComplete from '../../../../src/components/questioncomplete';
+import { Question, listQuestions } from '../../../../src/rest/questions';
+import Buttons from '../../../../src/components/buttons';
 import { getQuestionInfo } from './questionutil';
 
 type Data = {
@@ -29,7 +29,7 @@ type Data = {
 function getSidebarMidsection(data: Data) {
   const failedToLoadText = <Text>Failed to load next question</Text>
   if (data == null) {
-    console.info("props is null")
+    console.error("props is null")
     return failedToLoadText
   }
 
@@ -38,7 +38,7 @@ function getSidebarMidsection(data: Data) {
   }
 
   if (data.currentQuestion == null) {
-    console.info("question is null")
+    console.error("question is null")
     return failedToLoadText
   }
   return <QuestionSelect question={data.currentQuestion} />
@@ -47,23 +47,22 @@ function getSidebarMidsection(data: Data) {
 // Input: page data from getServerSideProps (type Data)
 // Function: produce main tagging UI
 const Tagging = ({ data }: InferGetServerSidePropsType<typeof getServerSideProps>) => {
-  console.log(data)
   function onNext() {
     var questionID = data.nextQuestion?.orderingID
     if (questionID == undefined) {
       // If we don't have a next question, this is the last question: let's just add one to get to the finished page
       questionID = data.currentQuestion?.orderingID + 1
     }
-    window.open(`/tagging/newimg/${data.imageID}/${questionID}`, "_self")
+    window.open(`/tagging/${data.imageID}/${questionID}`, "_self")
   }
 
   function onBack() {
-    window.open(`/tagging/newimg/${data.imageID}/${data.previousQuestion?.orderingID}`, "_self")
+    window.open(`/tagging/${data.imageID}/${data.previousQuestion?.orderingID}`, "_self")
   }
 
   function onSave() {
-    console.info("onSave")
-    // TODO: persist tags to memory, and then redirect to a new image
+    // TODO: persist tags to memory
+    window.open(`/tagging/newimg`, "_self")
   }
 
   const sidebarMidsection = getSidebarMidsection(data)
@@ -115,7 +114,7 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
   const questions = await listQuestions()
 
   if (questions == null) {
-    console.info("questions is null")
+    console.error("questions is null")
     return {
       props: {
         name: "",
@@ -129,10 +128,10 @@ export const getServerSideProps: GetServerSideProps = async (context: GetServerS
 
   // Handle redirecting if our URL doesn't match the ordering ID of the question we're looking at
   if (currentQuestion != null && currentQuestion.orderingID != questionNumber) {
-    console.info(`redirecting from ${questionNumber} to ${currentQuestion.orderingID}`)
+    console.debug(`redirecting from ${questionNumber} to ${currentQuestion.orderingID}`)
     return {
       redirect: {
-        destination: `/tagging/newimg/${imageID}/${currentQuestion.orderingID}`,
+        destination: `/tagging/${imageID}/${currentQuestion.orderingID}`,
         permanent: false
       }
     }

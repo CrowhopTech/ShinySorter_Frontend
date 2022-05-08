@@ -8,7 +8,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
     return {
         redirect: {
-            destination: `/tagging/newimg/${context.params.imageid}/0`,
+            destination: `/tagging/${context.params.imageid}/0`,
             permanent: false
         }
     }
