@@ -4,7 +4,8 @@ import {
   VStack,
   HStack,
   Text,
-  Checkbox
+  Checkbox,
+  FormControl
 } from '@chakra-ui/react';
 
 interface QuestionSelectData {
@@ -17,9 +18,9 @@ const QuestionSelect = ({ question }: QuestionSelectData) => {
   return <VStack align="start" w="full">
     <Text fontSize="2xl" fontWeight="bold">{q.questionText}</Text>
     {q.tagOptions.map(opt => (
-      <HStack key={opt.tagID}>
+      <FormControl key={opt.tagID}>
         <Checkbox>{opt.optionText}</Checkbox>
-      </HStack>
+      </FormControl>
     ))}
   </VStack>
 }
