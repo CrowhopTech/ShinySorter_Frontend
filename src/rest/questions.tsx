@@ -1,4 +1,4 @@
-import { ServerAddress } from "./constants"
+import { ServerAddress, ServerProtocol } from "./constants"
 import path from "path"
 
 const listQuestionsEndpoint = "questions"
@@ -30,8 +30,7 @@ export class Question {
 }
 
 export async function listQuestions(): Promise<Question[] | null> {
-    const requestPath = path.join(ServerAddress, listQuestionsEndpoint)
-
+    const requestPath = ServerProtocol + path.join(ServerAddress, listQuestionsEndpoint)
     const response = await fetch(requestPath, {
         method: "GET"
     }).catch(err => {
