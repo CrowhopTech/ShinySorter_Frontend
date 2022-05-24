@@ -1,5 +1,6 @@
 import { ServerAddress, ServerProtocol } from "./constants"
 import path from "path"
+import { rawListeners } from "process"
 
 const imagesEndpoint = "images"
 
@@ -15,39 +16,77 @@ export class Image {
     }
 }
 
-export async function listImages(): Promise<Image[] | null> {
+export async function listImages(tagged: boolean|undefined = undefined): Promise<Image[] | null> {
     const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
-    const response = await fetch(requestPath, {
-        method: "GET"
+    const requestURL = new URL(requestPath);
+    if (tagged != undefined) {
+        requestURL.searchParams.append("hasBeenTagged", `${tagged}`)
+    }
+    const response = await fetch(requestURL.toString(), {
+        method: "GET",
     }).catch(err => {
         console.error(`Error: ${err}`);
-        return null
+        throw err
     })
 
     if (response == null) {
         return null
     }
 
-    if (!response.ok) {
+    if (!response.ok && response.status != 404) {
         const responseText = await response.text()
         console.error(`${response.status} ${response.statusText}: ${responseText}`)
-        return null
+        throw new Error(responseText)
     }
 
     return await response.json().catch(err => {
         console.error(`Error decoding JSON: ${err}`)
-        return null
-    }).then(j => j as Image[])
+        throw new Error(`Error decoding JSON: ${err}`)
+    }).then(j => {
+        if (j == "[]") {
+            return [] as Image[]
+        }
+        return j as Image[]
+    })
 }
 
-export async function updateImageTags(imageID: string, selectedTags: number[]): Promise<void> {
+export async function getImage(imageID: string): Promise<Image> {
+    const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID)
+    const response = await fetch(requestPath, {
+        method: "GET",
+    }).catch(err => {
+        console.error(`Error: ${err}`);
+        throw err
+    })
+
+    if (response == null) {
+        throw new Error("respons was null")
+    }
+
+    if (!response.ok) {
+        const responseText = await response.text()
+        console.error(`${response.status} ${response.statusText}: ${responseText}`)
+        throw new Error(responseText)
+    }
+
+    return await response.json().catch(err => {
+        console.error(`Error decoding JSON: ${err}`)
+        throw new Error(`Error decoding JSON: ${err}`)
+    }).then(j => {
+        return j as Image
+    })
+}
+
+export async function updateImageTags(imageID: string, selectedTags: number[], markAsTagged: boolean|undefined=undefined): Promise<void> {
     // TODO: sanitize imageID
     const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID)
+    const requestBody = {
+            "tags": selectedTags,
+            "hasBeenTagged": markAsTagged
+    }
     const response = await window.fetch(requestPath, {
         method: "PATCH",
-        body: JSON.stringify({
-            "tags": selectedTags
-        }),
+        body: JSON.stringify(requestBody),
         headers: {
             "Content-Type": "application/json"
         }

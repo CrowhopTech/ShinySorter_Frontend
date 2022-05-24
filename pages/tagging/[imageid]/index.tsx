@@ -1,7 +1,7 @@
 import { GetServerSidePropsContext } from "next"
 import { Component } from "react"
 import { listQuestions, Question } from "../../../src/rest/questions"
-import { updateImageTags } from "../../../src/rest/images";
+import { getImage, updateImageTags } from "../../../src/rest/images";
 import {
     VStack,
     Divider,
@@ -19,6 +19,7 @@ import Buttons from "../../../src/components/buttons";
 interface TaggingProps {
     ImageID: string
     Questions: Question[]
+    SelectedTags: number[]
 }
 
 interface TaggingState {
@@ -32,7 +33,7 @@ class Tagging extends Component<TaggingProps, TaggingState> {
 
     constructor(props: TaggingProps) {
         super(props);
-        this.selectedTags = []
+        this.selectedTags = props.SelectedTags
         this.state = {
             QuestionIndex: 0,
             SelectedTags: this.selectedTags,
@@ -60,8 +61,8 @@ class Tagging extends Component<TaggingProps, TaggingState> {
         })
     }
 
-    saveClick() {
-        updateImageTags(this.props.ImageID, this.selectedTags)
+    async saveClick() {
+        await updateImageTags(this.props.ImageID, this.selectedTags, true)
         window.open("/tagging/newimg", "_self")
     }
 
@@ -134,9 +135,12 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return 0
     })
 
+    const image = await getImage(context.params.imageid)
+
     var data: TaggingProps = {
         Questions: questions,
         ImageID: context.params.imageid,
+        SelectedTags: image.tags,
     }
     return {
         props: data,
