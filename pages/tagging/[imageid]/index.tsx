@@ -15,6 +15,7 @@ import {
 import QuestionSelect from "../../../src/components/questionselect";
 import QuestionComplete from "../../../src/components/questioncomplete";
 import Buttons from "../../../src/components/buttons";
+import { ServerAddress, ServerProtocol } from "../../../src/rest/constants"
 
 interface TaggingProps {
     ImageID: string
@@ -96,7 +97,7 @@ class Tagging extends Component<TaggingProps, TaggingState> {
     render() {
         return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
             <GridItem colSpan={1} w="full" flex="1">
-                <Image src="https://myvancity.ca/wp-content/uploads/2019/01/Tulips3-1200x800.jpg" h="100vh" w="full" objectFit="contain" />
+                <Image src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} h="100vh" w="full" objectFit="contain" />
             </GridItem>
             <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
                 <VStack w="full" padding={3} spacing={10}>
