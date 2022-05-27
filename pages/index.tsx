@@ -1,18 +1,13 @@
-import {
-  Container,
-  Flex,
-  VStack
-} from '@chakra-ui/react';
-import Cart from '../src/sections/cart';
-import Details from '../src/sections/details';
+const Index = () => {}
 
-const Index = () => (
-  <Container maxW="container.xl" p={0}>
-      <Flex h="100vh" py={20}>
-        <Details />
-        <Cart />
-      </Flex>
-  </Container>
-);
+export async function getServerSideProps() {
+    // Redirect to the newimg endpoint which will select a fresh image to tag
+    return {
+        redirect: {
+            destination: "/tagging/newimg",
+            permanent: false
+        }
+    }
+}
 
-export default Index;
+export default Index

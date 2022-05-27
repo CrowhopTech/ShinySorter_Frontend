@@ -13,7 +13,7 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (images.length  == 0) {
         return {
             redirect: {
-                destination: "/",
+                destination: "/tagging/noimages",
                 permanent: false,
             }
         }
