@@ -8,11 +8,13 @@ export class Image {
     id: string
     md5sum: string
     tags: number[]
+    mimeType: string
 
-    constructor(id: string, md5sum: string, tags: number[]) {
+    constructor(id: string, md5sum: string, tags: number[], mimeType: string) {
         this.id = id
         this.md5sum = md5sum
         this.tags = tags
+        this.mimeType = mimeType
     }
 }
 

@@ -7,10 +7,12 @@ import {
     Divider,
     GridItem,
     Heading,
+    Text,
     Link,
     Progress,
     SimpleGrid,
-    Image
+    Image,
+    Center
 } from '@chakra-ui/react';
 import QuestionSelect from "../../../src/components/questionselect";
 import QuestionComplete from "../../../src/components/questioncomplete";
@@ -21,6 +23,7 @@ interface TaggingProps {
     ImageID: string
     Questions: Question[]
     SelectedTags: number[]
+    MIMEType: string
 }
 
 interface TaggingState {
@@ -94,10 +97,28 @@ class Tagging extends Component<TaggingProps, TaggingState> {
         return <QuestionSelect question={this.props.Questions[this.state.QuestionIndex]} selectionAdded={this.selectionAdded} selectionRemoved={this.selectionRemoved} selectedTags={this.state.SelectedTags} />
     }
 
+    getImageSection() {
+        if (this.props.MIMEType == undefined) {
+            return <Text color="white">MIME type is not set!</Text>
+        }
+        if (this.props.MIMEType.startsWith("video")) {
+            return <video width="full" controls loop autoPlay muted>
+                <source src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} type="video/mp4" />
+                Your browser does not support the video tag.
+            </video>
+        } else if (this.props.MIMEType.startsWith("image")) {
+            return <Image src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} h="100vh" w="full" objectFit="contain" />
+        } else {
+            return <Text>Unknown MIME type</Text>
+        }
+    }
+
     render() {
         return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
             <GridItem colSpan={1} w="full" flex="1">
-                <Image src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} h="100vh" w="full" objectFit="contain" />
+                <Center w="full" h="full">
+                    {this.getImageSection()}
+                </Center>
             </GridItem>
             <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
                 <VStack w="full" padding={3} spacing={10}>
@@ -141,6 +162,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     var data: TaggingProps = {
         Questions: questions,
         ImageID: context.params.imageid,
+        MIMEType: image.mimeType,
         SelectedTags: image.tags,
     }
     return {
