@@ -12,12 +12,16 @@ import {
     Progress,
     SimpleGrid,
     Image,
-    Center
+    Center,
+    Spacer,
+    Flex,
+    IconButton
 } from '@chakra-ui/react';
 import QuestionSelect from "../../../src/components/questionselect";
 import QuestionComplete from "../../../src/components/questioncomplete";
 import Buttons from "../../../src/components/buttons";
 import { ServerAddress, ServerProtocol } from "../../../src/rest/constants"
+import { FaHome } from 'react-icons/fa'
 
 interface TaggingProps {
     ImageID: string
@@ -68,6 +72,13 @@ class Tagging extends Component<TaggingProps, TaggingState> {
     async saveClick() {
         await updateImageTags(this.props.ImageID, this.selectedTags, true)
         window.open("/tagging/newimg", "_self")
+    }
+
+    goHome() {
+        var confirmed = confirm("If you are in the middle of tagging an image, the tags will not be saved. Proceed?");
+        if (confirmed) {
+            window.open("/", "_self")
+        }
     }
 
     selectionAdded(t: number) {
@@ -123,7 +134,11 @@ class Tagging extends Component<TaggingProps, TaggingState> {
             <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
                 <VStack w="full" padding={3} spacing={10}>
                     <VStack w="full" align="flex-start">
-                        <Heading as="h1">Current Image</Heading>
+                        <Flex w="full" h="fit-content">
+                            <Heading as="h1">Current Image</Heading>
+                            <Spacer/>
+                            <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={this.goHome}></IconButton>
+                        </Flex>
                         <Progress w="full" value={Math.min(this.state.QuestionIndex / this.props.Questions.length, 1.0)*100} />
                         <Link href="/tagging/newimg">Skip this image for now</Link>
                     </VStack>
