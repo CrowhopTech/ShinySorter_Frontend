@@ -1,5 +1,5 @@
 import React, { ChangeEvent, Component } from "react";
-import { Question } from "../rest/questions";
+import { Question } from "../../rest/questions";
 import {
   VStack,
   Text,

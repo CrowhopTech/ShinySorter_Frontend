@@ -1,6 +1,5 @@
 import { ArrowLeftIcon, ArrowRightIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { HStack, Button } from "@chakra-ui/react";
-import { debug } from "console";
 
 interface ButtonsData {
     isFinished: boolean;

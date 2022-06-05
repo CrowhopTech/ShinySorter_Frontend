@@ -17,9 +17,9 @@ import {
     Flex,
     IconButton
 } from '@chakra-ui/react';
-import QuestionSelect from "../../../src/components/questionselect";
-import QuestionComplete from "../../../src/components/questioncomplete";
-import Buttons from "../../../src/components/buttons";
+import QuestionSelect from "../../../src/components/tagging/questionselect";
+import QuestionComplete from "../../../src/components/tagging/questioncomplete";
+import Buttons from "../../../src/components/tagging/buttons";
 import { ServerAddress, ServerProtocol } from "../../../src/rest/constants"
 import { FaHome } from 'react-icons/fa'
 

@@ -1,7 +1,6 @@
 import { Divider, Radio, RadioGroup, Stack, VStack, Heading, Spinner } from "@chakra-ui/react"
 import React from "react"
-import { queryMode } from "../rest/images"
-import { Tag, useTags } from "../rest/tags"
+import { queryMode } from "../../../rest/images"
 import TagListItem from "./taglistitem"
 
 interface SelectedTagListProps {

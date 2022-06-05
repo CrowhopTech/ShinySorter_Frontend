@@ -1,9 +1,8 @@
 import { GridItem, SimpleGrid, VStack, Heading, Box } from "@chakra-ui/react"
 import { GetServerSideProps } from "next"
-import { ReactElement } from "react"
-import ImageResult from "../../src/components/imageresult"
-import SelectedTagList from "../../src/components/selectedtaglist"
-import TagSelectList from "../../src/components/tagselectlist"
+import ImageResult from "../../src/components/search/imageresult"
+import SelectedTagList from "../../src/components/search/tags/selectedtaglist"
+import TagSelectList from "../../src/components/search/tags/tagselectlist"
 import { parseQueryMode, queryMode } from "../../src/rest/images"
 
 const includeModeParam = "includeMode"
@@ -11,10 +10,10 @@ const excludeModeParam = "excludeMode"
 const includedTagsParam = "includedTags"
 const excludedTagsParam = "excludedTags"
 
-function generateComponentArray(component: ReactElement, len: number) {
+function generateImages(len: number) {
     let arr = []
     for (let i = 0; i < len; i++) {
-        arr.push(component)
+        arr.push(<ImageResult key={i} />)
     }
     return arr
 }
@@ -45,7 +44,7 @@ const Index: React.FC<IndexProps> = ({ includeMode, excludeMode, includedTags, e
         <GridItem bg="gray.700" padding="10px" overflowY="scroll">
             { /* TODO: replace this with a Chakra SimpleGrid to get that nice file grid layout */}
             <VStack alignItems="flex-start" w="full" spacing="1px">
-                {generateComponentArray(<ImageResult />, 10)}
+                {generateImages(10)}
             </VStack>
         </GridItem>
     </SimpleGrid>

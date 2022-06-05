@@ -1,5 +1,5 @@
 import { Divider, Heading, VStack, Text, Spinner } from "@chakra-ui/react"
-import { Tag, useTags } from "../rest/tags"
+import { Tag, useTags } from "../../../rest/tags"
 import TagListItem from "./taglistitem"
 
 interface TagSelectListData {

@@ -1,6 +1,6 @@
 import { HStack, IconButton, Spinner, Text } from "@chakra-ui/react"
 import { FaPlusCircle, FaMinusCircle } from "react-icons/fa"
-import { useTag } from "../rest/tags"
+import { useTag } from "../../../rest/tags"
 
 type TagClickEvent = (tagID: number) => void
 
