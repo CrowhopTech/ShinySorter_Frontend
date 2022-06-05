@@ -1,31 +1,22 @@
-import { Divider, Heading, VStack, Text } from "@chakra-ui/react"
-import { ReactElement } from "react"
-import { Tag } from "../rest/tags"
+import { Divider, Heading, VStack, Text, Spinner } from "@chakra-ui/react"
+import { Tag, useTags } from "../rest/tags"
 import TagListItem from "./taglistitem"
 
 interface TagSelectListData {
-    tagsList: Tag[] | undefined
 }
 
-function getTagElements(tags: Tag[] | undefined): ReactElement[] {
-    if (tags === undefined) {
-        return []
+const TagSelectList: React.FC<TagSelectListData> = ({ }) => {
+    const { tags, isLoading, isError } = useTags()
+    if (isLoading) {
+        return <Spinner />
     }
 
-    let tagElements: ReactElement[] = []
-    tags.forEach((tag) => {
-        tagElements.push(<TagListItem key={tag.id} tag={tag} showPlusButton={true} showMinusButton={true} />)
-    })
-    return tagElements
-}
-
-const TagSelectList: React.FC<TagSelectListData> = ({ tagsList }) => {
     return <VStack alignItems="flex-start">
         <Heading color="white" fontSize="2xl">Tags</Heading>
         <Text color="white" fontSize="sm" fontStyle="italic">Select tags to include or exclude</Text>
         <Divider />
         <VStack alignItems="flex-start" w="full">
-            { getTagElements(tagsList) }
+            {tags.map(tag => <TagListItem key={tag.id} tagID={tag.id} showPlusButton={true} showMinusButton={true} />)}
         </VStack>
     </VStack>
 }

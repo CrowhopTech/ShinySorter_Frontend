@@ -1,34 +1,26 @@
-import { Divider, Radio, RadioGroup, Stack, VStack, Heading } from "@chakra-ui/react"
+import { Divider, Radio, RadioGroup, Stack, VStack, Heading, Spinner } from "@chakra-ui/react"
 import React from "react"
 import { queryMode } from "../rest/images"
-import { Tag } from "../rest/tags"
+import { Tag, useTags } from "../rest/tags"
 import TagListItem from "./taglistitem"
 
 interface SelectedTagListProps {
     selectedMode: queryMode
     selectedTags: number[]
-    tagsList: Tag[] | undefined
 }
 
-function getTagRemoveListItem(tagsList: Tag[], id: number) {
-    let tag = tagsList.find(t => t.id == id)
-    if (tag === undefined) {
-        throw new Error(`Tag ${id} not found`)
-    }
-    return <TagListItem tag={tag} showPlusButton={false} showMinusButton={true}/>
+function getTagRemoveListItem(tagID: number) {
+    return <TagListItem key={tagID} tagID={tagID} showPlusButton={false} showMinusButton={true} />
 }
 
-function getIncludedTagsSection(tagsList: Tag[] | undefined, selectedTags: number[] | undefined) {
-    if (tagsList === undefined) {
-        throw new Error("tagsList is undefined")
-    }
+function getIncludedTagsSection(selectedTags: number[] | undefined) {
     if (selectedTags === undefined || selectedTags.length == 0) {
         return <Heading color="white" size="sm" fontStyle="italic" fontWeight="medium">No selected tags</Heading>
     }
-    return selectedTags.map(tag => getTagRemoveListItem(tagsList, tag))
+    return selectedTags.map(tag => getTagRemoveListItem(tag))
 }
 
-const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selectedTags, tagsList }) => {
+const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selectedTags }) => {
     if (selectedTags === undefined) {
         selectedTags = []
     }
@@ -44,7 +36,7 @@ const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selecte
         </VStack>
         <Divider />
         <VStack alignItems="flex-start" w="full">
-            { getIncludedTagsSection(tagsList, selectedTags) }
+            {getIncludedTagsSection(selectedTags)}
         </VStack>
     </React.Fragment>
 }

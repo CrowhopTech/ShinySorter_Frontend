@@ -1,11 +1,10 @@
-import { GridItem, SimpleGrid, VStack, Divider, Heading, Box } from "@chakra-ui/react"
+import { GridItem, SimpleGrid, VStack, Heading, Box } from "@chakra-ui/react"
 import { GetServerSideProps } from "next"
-import { ReactElement, useState } from "react"
+import { ReactElement } from "react"
 import ImageResult from "../../src/components/imageresult"
 import SelectedTagList from "../../src/components/selectedtaglist"
 import TagSelectList from "../../src/components/tagselectlist"
 import { parseQueryMode, queryMode } from "../../src/rest/images"
-import { ListTags, Tag } from "../../src/rest/tags"
 
 const includeModeParam = "includeMode"
 const excludeModeParam = "excludeMode"
@@ -21,36 +20,34 @@ function generateComponentArray(component: ReactElement, len: number) {
 }
 
 interface IndexProps {
-    tags: Tag[] | undefined
     includeMode: queryMode
     excludeMode: queryMode
     includedTags: number[]
     excludedTags: number[]
 }
 
-const Index: React.FC<IndexProps> = ({tags, includeMode, excludeMode, includedTags, excludedTags}) => {
-
+const Index: React.FC<IndexProps> = ({ includeMode, excludeMode, includedTags, excludedTags }) => {
     return <SimpleGrid columns={3} columnGap={1} height="100vh" width="100vw" maxW="100vw" bg="gray.900" gridTemplateColumns="min-content min-content auto" overflowX="clip" overflowY="hidden">
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
-            <TagSelectList tagsList={tags}></TagSelectList>
+            <TagSelectList />
         </GridItem>
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
             <VStack alignItems="flex-start">
                 <Heading color="white" fontSize="2xl" overflowWrap={"unset"}>Include files with the tags:</Heading>
-                <SelectedTagList selectedMode={includeMode} tagsList={tags} selectedTags={includedTags}></SelectedTagList>
-                
+                <SelectedTagList selectedMode={includeMode} selectedTags={includedTags}></SelectedTagList>
+
                 <Box height="5px"></Box>
 
                 <Heading color="white" fontSize="2xl" overflowWrap={"unset"}>But exclude files with the tags:</Heading>
-                <SelectedTagList selectedMode={excludeMode}  tagsList={tags} selectedTags={excludedTags}></SelectedTagList>
+                <SelectedTagList selectedMode={excludeMode} selectedTags={excludedTags}></SelectedTagList>
             </VStack>
         </GridItem>
         <GridItem bg="gray.700" padding="10px" overflowY="scroll">
             { /* TODO: replace this with a Chakra SimpleGrid to get that nice file grid layout */}
             <VStack alignItems="flex-start" w="full" spacing="1px">
-                { generateComponentArray(<ImageResult></ImageResult>, 10) }
+                {generateComponentArray(<ImageResult />, 10)}
             </VStack>
-        </GridItem> 
+        </GridItem>
     </SimpleGrid>
 }
 
@@ -64,7 +61,7 @@ function parseIntParam(input: undefined | string | string[]): number[] {
     return input.map((str) => parseInt(str))
 }
 
-export const getServerSideProps: GetServerSideProps = async ({query, req}) => {
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
     let includeMode: queryMode = "all"
     let excludeMode: queryMode = "all"
     let includedTags: number[] = []
@@ -86,15 +83,13 @@ export const getServerSideProps: GetServerSideProps = async ({query, req}) => {
         excludedTags = parseIntParam(query[excludedTagsParam])
     }
 
-    let tl = await ListTags()
     return {
-      props: {
-        tags: tl,
-        includeMode: includeMode,
-        excludeMode: excludeMode,
-        includedTags: includedTags,
-        excludedTags: excludedTags
-      }
+        props: {
+            includeMode: includeMode,
+            excludeMode: excludeMode,
+            includedTags: includedTags,
+            excludedTags: excludedTags
+        }
     }
 }
 

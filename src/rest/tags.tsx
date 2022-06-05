@@ -1,11 +1,11 @@
 import { ServerAddress, ServerProtocol } from "./constants"
 import path from "path"
-import _ from "lodash"
+import useSWR from "swr"
+
+const fetcher = (input: RequestInfo, init?: RequestInit | undefined) => fetch(input, init).then(res => res.json())
 
 const listTagsEndpoint = "tags"
-
-let tagsCache: Tag[] | null = null
-let tagsMap: Map<number, Tag> | null = null
+const listTagsRequestPath = ServerProtocol + path.join(ServerAddress, listTagsEndpoint)
 
 export class Tag {
     id: number
@@ -21,78 +21,47 @@ export class Tag {
     }
 }
 
-function updateInCache(tags: Tag[]): Tag[] {
-    if (tagsMap == null) {
-        tagsMap = new Map()
+export function useTags() {
+    const { data, error } = useSWR(listTagsRequestPath, fetcher)
+    if (error) {
+        throw new Error(error)
     }
-    for (const tag of tags) {
-        tagsMap!.set(tag.id, tag)
+
+    return {
+        tags: data as Tag[],
+        isLoading: !error && !data,
+        isError: false
     }
-    return tags
 }
 
-async function updateTagsCache() {
-    const requestPath = ServerProtocol + path.join(ServerAddress, listTagsEndpoint)
-    const response = await fetch(requestPath, {
-        method: "GET"
-    }).catch(err => {
-        console.error(`Error: ${err}`);
-        return null
-    })
-
-    if (response == null) {
-        return null
+export function useTag(tagID: number) {
+    if (tagID === undefined) {
+        throw new Error("tagID is undefined")
     }
 
-    if (!response.ok) {
-        const responseText = await response.text()
-        console.error(`${response.status} ${response.statusText}: ${responseText}`)
-        return null
+    const { data, error } = useSWR(listTagsRequestPath, fetcher)
+    if (error) {
+        throw new Error(error)
     }
 
-    tagsCache = await response.json().catch(err => {
-        console.error(`Error decoding JSON: ${err}`)
-        return null
-    }).then(j => updateInCache(j as Tag[]))
-}
-
-export async function ListTags(): Promise<Tag[]> {
-    if (tagsCache == null) {
-        await updateTagsCache()
+    if (!error && !data) {
+        return {
+            tag: {} as Tag,
+            isLoading: true,
+            isError: false,
+        }
     }
 
-    if (tagsCache == null) {
-        throw new Error("tagsCache is still null after updateTagsCache()")
+    const tags = data as Tag[]
+    const tag = tags.find(t => t.id == tagID)
+
+    if (!tag) {
+        throw new Error(`tag ${tagID} is not found`)
     }
 
-    return tagsCache
-}
-
-export async function GetTag(id: number): Promise<Tag> {
-    if (tagsMap == null) {
-        await updateTagsCache()
+    return {
+        tag: tag,
+        isLoading: !error && !data,
+        isError: false
     }
-
-    if (tagsMap == null) {
-        throw new Error("tagsMap is still null after updateTagsCache()")
-    }
-
-    let tag = tagsMap.get(id)
-    if (tag == undefined) {
-        throw new Error(`tag ${id} is not found`)
-    }
-
-    return tag
-}
-
-export async function GetTagsMap(): Promise<Map<number, Tag>> {
-    if (tagsMap == null) {
-        await updateTagsCache()
-    }
-
-    if (tagsMap == null) {
-        throw new Error("tagsMap is still null after updateTagsCache()")
-    }
-
-    return tagsMap
 }

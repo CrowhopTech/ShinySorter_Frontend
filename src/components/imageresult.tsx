@@ -31,10 +31,10 @@ class ImageResult extends Component<ImageResultData> {
                 <VStack w="full" padding={"8px"} alignItems="flex-start">
                     <Heading color="white">filename.txt</Heading>
                     <HStack w="full" alignItems="flex-start" flexWrap="wrap">
-                        { generateTag("apple")}
-                        { generateTag("orange")}
-                        { generateTag("pear")}
-                        { generateTag("bloober")}
+                        {generateTag("apple")}
+                        {generateTag("orange")}
+                        {generateTag("pear")}
+                        {generateTag("bloober")}
                     </HStack>
                 </VStack>
             </HStack>

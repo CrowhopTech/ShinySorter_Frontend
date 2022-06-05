@@ -6,7 +6,7 @@ import { Heading } from "@chakra-ui/react";
 const QuestionComplete = () => {
     return <VStack w="full">
         TODO: use a proper image/SVG
-        <CheckCircleIcon w="full" h="full" maxBlockSize={256} color="green.400"/>
+        <CheckCircleIcon w="full" h="full" maxBlockSize={256} color="green.400" />
         <Heading>All done!</Heading>
     </VStack>
 }

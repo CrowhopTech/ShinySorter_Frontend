@@ -43,10 +43,10 @@ class QuestionSelect extends Component<QuestionSelectData> {
     return <VStack align="start" w="full">
       <Text fontSize="2xl" fontWeight="bold">{this.props.question.questionText}</Text>
       {this.props.question.tagOptions.map(opt => (
-          <Checkbox key={Math.random()}
-                    onChange={this.onChange}
-                    value={opt.tagID}
-                    isChecked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Checkbox>
+        <Checkbox key={Math.random()}
+          onChange={this.onChange}
+          value={opt.tagID}
+          isChecked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Checkbox>
       ))}
     </VStack>
   }
