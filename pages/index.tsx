@@ -4,6 +4,10 @@ function goToTag() {
     window.open("/tagging/newimg", "_self")
 }
 
+function goToSearch() {
+    window.open("/search", "_self")
+}
+
 const Index = () => {
     return <Center w="full" h="100vh" bg="gray.900">
         <Container w="container.sm" bg="blue.700" padding="10" rounded="20px">
@@ -11,7 +15,7 @@ const Index = () => {
                 <Heading size="lg" colorScheme="blue">What would you like to do?</Heading>
                 <Divider />
                     <Button w="full" colorScheme="blue" onClick={goToTag}>Tag Images</Button>
-                    <Button w="full" colorScheme="blue" disabled>Search Images</Button>
+                    <Button w="full" colorScheme="blue" onClick={goToSearch}>Search Images</Button>
                     <Button w="full" colorScheme="blue" disabled>Trim Duplicates</Button>
             </VStack>
         </Container>

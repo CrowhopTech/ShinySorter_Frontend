@@ -18,6 +18,22 @@ export class Image {
     }
 }
 
+export type queryMode = "any" | "all"
+
+export function parseQueryMode(input: string | string[] | undefined): queryMode {
+    if (typeof input !== "string") {
+        throw new Error(`Invalid type ${typeof input} for query mode, must be string`)
+    }
+    switch (input) {
+        case "any":
+            return "any"
+        case "all":
+            return "all"
+        default:
+            throw new Error(`Unknown query mode: ${input}`)
+    }
+}
+
 export async function listImages(tagged: boolean|undefined = undefined): Promise<Image[] | null> {
     const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
     const requestURL = new URL(requestPath);
