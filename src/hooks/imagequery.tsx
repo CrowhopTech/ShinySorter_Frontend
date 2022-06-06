@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { parseQueryMode, queryMode } from "../rest/images";
+import { parseQueryMode, ImageQueryMode, ImageQuery } from "../rest/images";
 
 const includeModeParam = "includeMode"
 const excludeModeParam = "excludeMode"
@@ -25,7 +25,7 @@ function parseIntParam(input: undefined | string | string[]): number[] {
 }
 
 function updateParamsAndNavigate(router: NextRouter,
-    includeMode: queryMode | undefined, excludeMode: queryMode | undefined, includedTags: number[] | undefined, excludedTags: number[] | undefined) {
+    includeMode: ImageQueryMode | undefined, excludeMode: ImageQueryMode | undefined, includedTags: number[] | undefined, excludedTags: number[] | undefined) {
     let currentUrlParams = new URLSearchParams(window.location.search)
     if (includeMode !== undefined) {
         currentUrlParams.set(includeModeParam, includeMode.toString())
@@ -50,7 +50,7 @@ function useImageQuery() {
     const [includedTags, setIncludedTags] = useState((includedTagsParam in router.query) ? parseIntParam(router.query[includedTagsParam]) : [])
     const [excludedTags, setExcludedTags] = useState((excludedTagsParam in router.query) ? parseIntParam(router.query[excludedTagsParam]) : [])
 
-    function setMode(which: "include" | "exclude", newValue: queryMode) {
+    function setMode(which: "include" | "exclude", newValue: ImageQueryMode) {
         if (which == "include") {
             updateParamsAndNavigate(router, newValue, undefined, undefined, undefined)
         } else if (which == "exclude") {
@@ -59,7 +59,6 @@ function useImageQuery() {
     }
 
     function setTagState(tag: number, state: "included" | "excluded" | "none") {
-        console.info(`Setting tag ${tag} to ${state}`)
         switch (state) {
             case "included": {
                 let newIncludedTags = includedTags, newExcludedTags = excludedTags
@@ -113,7 +112,8 @@ function useImageQuery() {
         setExcludedTags(excludedTagsParam in router.query ? parseIntParam(router.query[excludedTagsParam]) : [])
     }, [router.query[excludedTagsParam]])
 
-    return { includeMode, excludeMode, includedTags, excludedTags, setMode, setTagState }
+    const query = new ImageQuery(includeMode, excludeMode, includedTags, excludedTags)
+    return { query, setMode, setTagState }
 }
 
 export default useImageQuery

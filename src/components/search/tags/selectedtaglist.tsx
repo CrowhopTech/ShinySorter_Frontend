@@ -1,12 +1,12 @@
 import { Divider, Radio, RadioGroup, Stack, VStack, Heading } from "@chakra-ui/react"
 import React from "react"
-import { queryMode } from "../../../rest/images"
+import { ImageQueryMode } from "../../../rest/images"
 import TagListItem from "./taglistitem"
 
 interface SelectedTagListProps {
-    selectedMode: queryMode
+    selectedMode: ImageQueryMode
     selectedTags: number[]
-    onModeChange?: ((mode: queryMode) => void) | undefined
+    onModeChange?: ((mode: ImageQueryMode) => void) | undefined
     onTagRemoved?: ((tagID: number) => void) | undefined
 }
 
@@ -24,7 +24,7 @@ const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selecte
 
     return <React.Fragment>
         <VStack alignItems="flex-start">
-            <RadioGroup color="white" defaultValue='all' value={selectedMode} onChange={e => onModeChange && onModeChange(e as queryMode)}>
+            <RadioGroup color="white" defaultValue='all' value={selectedMode} onChange={e => onModeChange && onModeChange(e as ImageQueryMode)}>
                 <Stack spacing={4} direction='row'>
                     <Radio value='all'>all of</Radio>
                     <Radio value='any'>any of</Radio>

@@ -21,8 +21,6 @@ const TagListItem: React.FC<TagListItemProps> = ({ showPlusButton, showMinusButt
         textSection = <Text color="white">{tag.userFriendlyName}</Text>
     }
 
-    console.info("creating tag")
-
     return <HStack>
         {showPlusButton && <IconButton color="green.500" icon={<FaPlusCircle />} onClick={() => { plusButtonClicked && plusButtonClicked(tag.id) }} aria-label={"add-tag"} variant="ghost" size="{15}" isRound />}
         {showMinusButton && <IconButton color="red.500" icon={<FaMinusCircle />} onClick={() => { minusButtonClicked && minusButtonClicked(tag.id) }} aria-label={"remove-tag"} variant="ghost" size="{15}" isRound />}

@@ -1,6 +1,9 @@
 import { ServerAddress, ServerProtocol } from "./constants"
 import path from "path"
 import { rawListeners } from "process"
+import useSWR from "swr"
+
+const fetcher = (input: RequestInfo, init?: RequestInit | undefined) => fetch(input, init).then(res => res.json())
 
 const imagesEndpoint = "images"
 
@@ -18,9 +21,40 @@ export class Image {
     }
 }
 
-export type queryMode = "any" | "all"
+export type ImageQueryMode = "any" | "all"
 
-export function parseQueryMode(input: string | string[] | undefined): queryMode {
+export class ImageQuery {
+    includeMode: ImageQueryMode
+    excludeMode: ImageQueryMode
+    includeTags: number[]
+    excludeTags: number[]
+    tagged: boolean
+
+    constructor(includeMode?: ImageQueryMode, excludeMode?: ImageQueryMode, includedTags?: number[], excludedTags?: number[], tagged?: boolean) {
+        this.includeMode = includeMode ? includeMode : "all"
+        this.excludeMode = excludeMode ? excludeMode : "all"
+        this.includeTags = includedTags ? includedTags : []
+        this.excludeTags = excludedTags ? excludedTags : []
+        this.tagged = tagged ? tagged : true
+    }
+
+    getURL() {
+        const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
+        const requestURL = new URL(requestPath);
+        requestURL.searchParams.append("hasBeenTagged", this.tagged.toString())
+        if (this.includeTags.length > 0) {
+            requestURL.searchParams.append("includeTags", this.includeTags.join(","))
+            requestURL.searchParams.append("includeOperator", this.includeMode)
+        }
+        if (this.excludeTags.length > 0) {
+            requestURL.searchParams.append("excludeTags", this.excludeTags.join(","))
+            requestURL.searchParams.append("excludeOperator", this.excludeMode)
+        }
+        return requestURL.toString()
+    }
+}
+
+export function parseQueryMode(input: string | string[] | undefined): ImageQueryMode {
     if (typeof input !== "string") {
         throw new Error(`Invalid type ${typeof input} for query mode, must be string`)
     }
@@ -34,13 +68,8 @@ export function parseQueryMode(input: string | string[] | undefined): queryMode 
     }
 }
 
-export async function listImages(tagged: boolean | undefined = undefined): Promise<Image[] | null> {
-    const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
-    const requestURL = new URL(requestPath);
-    if (tagged != undefined) {
-        requestURL.searchParams.append("hasBeenTagged", `${tagged}`)
-    }
-    const response = await fetch(requestURL.toString(), {
+export async function listImages(query: ImageQuery): Promise<Image[] | null> {
+    const response = await fetch(query.getURL(), {
         method: "GET",
     }).catch(err => {
         console.error(`Error: ${err}`);
@@ -121,5 +150,21 @@ export async function updateImageTags(imageID: string, selectedTags: number[], m
         const responseText = await response.text()
         console.error(`${response.status} ${response.statusText}: ${responseText}`)
         return
+    }
+}
+
+export function useImages(query: ImageQuery) {
+    const { data, error } = useSWR(query.getURL(), fetcher)
+    if (error) {
+        throw new Error(error)
+    }
+
+    console.info("data", data)
+    console.info("query", query)
+
+    return {
+        images: data,
+        isLoading: !error && !data,
+        isError: false
     }
 }

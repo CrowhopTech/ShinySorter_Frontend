@@ -1,11 +1,11 @@
 import { GetServerSideProps } from "next"
-import { listImages } from "../../../src/rest/images"
+import { ImageQuery, listImages } from "../../../src/rest/images"
 
 const Index = () => { }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     // TODO: select a new random image and redirect to it
-    const images = await listImages(false)
+    const images = await listImages(new ImageQuery(undefined, undefined, undefined, undefined, false))
     if (images == null) {
         throw new Error("images is null")
     }

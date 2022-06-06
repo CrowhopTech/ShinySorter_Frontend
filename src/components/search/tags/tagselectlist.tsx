@@ -13,9 +13,6 @@ const TagSelectList: React.FC<TagSelectListData> = ({ tagSelected, hideTags }) =
         return <Spinner />
     }
 
-    console.info("hideTags", hideTags)
-    console.info("tags", tags)
-
     return <VStack alignItems="flex-start">
         <Heading color="white" fontSize="2xl">Tags</Heading>
         <Text color="white" fontSize="sm" fontStyle="italic">Select tags to include or exclude</Text>
