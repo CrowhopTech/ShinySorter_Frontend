@@ -1,4 +1,4 @@
-const Index = () => {}
+const Index = () => { }
 
 export async function getServerSideProps() {
     // Redirect to the newimg endpoint which will select a fresh image to tag

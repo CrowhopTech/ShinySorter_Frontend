@@ -1,4 +1,4 @@
-import { Center, Container, Text, Heading, VStack, Button, Divider } from "@chakra-ui/react"
+import { Center, Container, Heading, VStack, Button, Divider } from "@chakra-ui/react"
 
 function goToTag() {
     window.open("/tagging/newimg", "_self")
@@ -14,9 +14,9 @@ const Index = () => {
             <VStack>
                 <Heading size="lg" colorScheme="blue">What would you like to do?</Heading>
                 <Divider />
-                    <Button w="full" colorScheme="blue" onClick={goToTag}>Tag Images</Button>
-                    <Button w="full" colorScheme="blue" onClick={goToSearch}>Search Images</Button>
-                    <Button w="full" colorScheme="blue" disabled>Trim Duplicates</Button>
+                <Button w="full" colorScheme="blue" onClick={goToTag}>Tag Images</Button>
+                <Button w="full" colorScheme="blue" onClick={goToSearch}>Search Images</Button>
+                <Button w="full" colorScheme="blue" disabled>Trim Duplicates</Button>
             </VStack>
         </Container>
     </Center>

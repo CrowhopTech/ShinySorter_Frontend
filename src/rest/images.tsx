@@ -34,7 +34,7 @@ export function parseQueryMode(input: string | string[] | undefined): queryMode 
     }
 }
 
-export async function listImages(tagged: boolean|undefined = undefined): Promise<Image[] | null> {
+export async function listImages(tagged: boolean | undefined = undefined): Promise<Image[] | null> {
     const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
     const requestURL = new URL(requestPath);
     if (tagged != undefined) {
@@ -95,12 +95,12 @@ export async function getImage(imageID: string): Promise<Image> {
     })
 }
 
-export async function updateImageTags(imageID: string, selectedTags: number[], markAsTagged: boolean|undefined=undefined): Promise<void> {
+export async function updateImageTags(imageID: string, selectedTags: number[], markAsTagged: boolean | undefined = undefined): Promise<void> {
     // TODO: sanitize imageID
     const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID)
     const requestBody = {
-            "tags": selectedTags,
-            "hasBeenTagged": markAsTagged
+        "tags": selectedTags,
+        "hasBeenTagged": markAsTagged
     }
     const response = await window.fetch(requestPath, {
         method: "PATCH",

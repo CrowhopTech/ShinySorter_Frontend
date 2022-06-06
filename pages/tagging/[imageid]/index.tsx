@@ -136,10 +136,10 @@ class Tagging extends Component<TaggingProps, TaggingState> {
                     <VStack w="full" align="flex-start">
                         <Flex w="full" h="fit-content">
                             <Heading as="h1">Current Image</Heading>
-                            <Spacer/>
+                            <Spacer />
                             <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={this.goHome}></IconButton>
                         </Flex>
-                        <Progress w="full" value={Math.min(this.state.QuestionIndex / this.props.Questions.length, 1.0)*100} />
+                        <Progress w="full" value={Math.min(this.state.QuestionIndex / this.props.Questions.length, 1.0) * 100} />
                         <Link href="/tagging/newimg">Skip this image for now</Link>
                     </VStack>
                     <Divider />
