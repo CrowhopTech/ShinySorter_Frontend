@@ -1,14 +1,9 @@
-import { GridItem, SimpleGrid, VStack, Heading, Box } from "@chakra-ui/react"
-import { GetServerSideProps } from "next"
+import { GridItem, SimpleGrid, VStack, Heading, Box, Button } from "@chakra-ui/react"
 import ImageResult from "../../src/components/search/imageresult"
 import SelectedTagList from "../../src/components/search/tags/selectedtaglist"
 import TagSelectList from "../../src/components/search/tags/tagselectlist"
-import { parseQueryMode, queryMode } from "../../src/rest/images"
-
-const includeModeParam = "includeMode"
-const excludeModeParam = "excludeMode"
-const includedTagsParam = "includedTags"
-const excludedTagsParam = "excludedTags"
+import useImageQuery from "../../src/hooks/imagequery"
+import { DedupList } from "../../src/util"
 
 function generateImages(len: number) {
     let arr = []
@@ -18,27 +13,22 @@ function generateImages(len: number) {
     return arr
 }
 
-interface IndexProps {
-    includeMode: queryMode
-    excludeMode: queryMode
-    includedTags: number[]
-    excludedTags: number[]
-}
+const Index: React.FC = () => {
+    const { includeMode, excludeMode, includedTags, excludedTags, setMode, setTagState } = useImageQuery()
 
-const Index: React.FC<IndexProps> = ({ includeMode, excludeMode, includedTags, excludedTags }) => {
     return <SimpleGrid columns={3} columnGap={1} height="100vh" width="100vw" maxW="100vw" bg="gray.900" gridTemplateColumns="min-content min-content auto" overflowX="clip" overflowY="hidden">
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
-            <TagSelectList />
+            <TagSelectList hideTags={[...includedTags, ...excludedTags]} tagSelected={(tagID, state) => setTagState(tagID, state)} />
         </GridItem>
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
             <VStack alignItems="flex-start">
                 <Heading color="white" fontSize="2xl" overflowWrap={"unset"}>Include files with the tags:</Heading>
-                <SelectedTagList selectedMode={includeMode} selectedTags={includedTags}></SelectedTagList>
+                <SelectedTagList selectedMode={includeMode} selectedTags={DedupList(includedTags)} onModeChange={newMode => setMode("include", newMode)} onTagRemoved={tagID => setTagState(tagID, "none")} />
 
                 <Box height="5px"></Box>
 
                 <Heading color="white" fontSize="2xl" overflowWrap={"unset"}>But exclude files with the tags:</Heading>
-                <SelectedTagList selectedMode={excludeMode} selectedTags={excludedTags}></SelectedTagList>
+                <SelectedTagList selectedMode={excludeMode} selectedTags={DedupList(excludedTags)} onModeChange={newMode => setMode("exclude", newMode)} onTagRemoved={tagID => setTagState(tagID, "none")} />
             </VStack>
         </GridItem>
         <GridItem bg="gray.700" padding="10px" overflowY="scroll">
@@ -48,48 +38,6 @@ const Index: React.FC<IndexProps> = ({ includeMode, excludeMode, includedTags, e
             </VStack>
         </GridItem>
     </SimpleGrid>
-}
-
-function parseIntParam(input: undefined | string | string[]): number[] {
-    if (input === undefined) {
-        return []
-    }
-    if (typeof input === "string") {
-        return [parseInt(input)]
-    }
-    return input.map((str) => parseInt(str))
-}
-
-export const getServerSideProps: GetServerSideProps = async ({ query }) => {
-    let includeMode: queryMode = "all"
-    let excludeMode: queryMode = "all"
-    let includedTags: number[] = []
-    let excludedTags: number[] = []
-
-    if (includeModeParam in query) {
-        includeMode = parseQueryMode(query[includeModeParam])
-    }
-
-    if (excludeModeParam in query) {
-        excludeMode = parseQueryMode(query[excludeModeParam])
-    }
-
-    if (includedTagsParam in query) {
-        includedTags = parseIntParam(query[includedTagsParam])
-    }
-
-    if (excludedTagsParam in query) {
-        excludedTags = parseIntParam(query[excludedTagsParam])
-    }
-
-    return {
-        props: {
-            includeMode: includeMode,
-            excludeMode: excludeMode,
-            includedTags: includedTags,
-            excludedTags: excludedTags
-        }
-    }
 }
 
 export default Index

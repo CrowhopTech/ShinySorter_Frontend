@@ -1,4 +1,4 @@
-import { Divider, Radio, RadioGroup, Stack, VStack, Heading, Spinner } from "@chakra-ui/react"
+import { Divider, Radio, RadioGroup, Stack, VStack, Heading } from "@chakra-ui/react"
 import React from "react"
 import { queryMode } from "../../../rest/images"
 import TagListItem from "./taglistitem"
@@ -6,27 +6,25 @@ import TagListItem from "./taglistitem"
 interface SelectedTagListProps {
     selectedMode: queryMode
     selectedTags: number[]
+    onModeChange?: ((mode: queryMode) => void) | undefined
+    onTagRemoved?: ((tagID: number) => void) | undefined
 }
 
-function getTagRemoveListItem(tagID: number) {
-    return <TagListItem key={tagID} tagID={tagID} showPlusButton={false} showMinusButton={true} />
-}
-
-function getIncludedTagsSection(selectedTags: number[] | undefined) {
+function getIncludedTagsSection(selectedTags: number[] | undefined, onTagRemoved: ((tagID: number) => void) | undefined) {
     if (selectedTags === undefined || selectedTags.length == 0) {
         return <Heading color="white" size="sm" fontStyle="italic" fontWeight="medium">No selected tags</Heading>
     }
-    return selectedTags.map(tag => getTagRemoveListItem(tag))
+    return selectedTags.map(tag => <TagListItem key={tag} tagID={tag} showPlusButton={false} showMinusButton={true} minusButtonClicked={tagID => onTagRemoved && onTagRemoved(tagID)} />)
 }
 
-const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selectedTags }) => {
+const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selectedTags, onModeChange, onTagRemoved }) => {
     if (selectedTags === undefined) {
         selectedTags = []
     }
 
     return <React.Fragment>
         <VStack alignItems="flex-start">
-            <RadioGroup color="white" defaultValue='all' value={selectedMode}>
+            <RadioGroup color="white" defaultValue='all' value={selectedMode} onChange={e => onModeChange && onModeChange(e as queryMode)}>
                 <Stack spacing={4} direction='row'>
                     <Radio value='all'>all of</Radio>
                     <Radio value='any'>any of</Radio>
@@ -35,7 +33,7 @@ const SelectedTagList: React.FC<SelectedTagListProps> = ({ selectedMode, selecte
         </VStack>
         <Divider />
         <VStack alignItems="flex-start" w="full">
-            {getIncludedTagsSection(selectedTags)}
+            {getIncludedTagsSection(selectedTags, onTagRemoved)}
         </VStack>
     </React.Fragment>
 }
