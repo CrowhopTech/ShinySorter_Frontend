@@ -35,7 +35,7 @@ export class ImageQuery {
         this.excludeMode = excludeMode ? excludeMode : "all"
         this.includeTags = includedTags ? includedTags : []
         this.excludeTags = excludedTags ? excludedTags : []
-        this.tagged = tagged ? tagged : true
+        this.tagged = tagged !== undefined ? tagged : true
     }
 
     getURL() {

@@ -1,6 +1,7 @@
-import { Box, Button, Center, Heading, HStack, Spinner, Text, VStack } from "@chakra-ui/react";
-import { Image } from "../../rest/images";
+import { Box, Button, Center, Heading, HStack, Spinner, Text, VStack, Image as ImageElement } from "@chakra-ui/react";
 import { useTag } from "../../rest/tags";
+import { Image } from "../../rest/images"
+import { ServerAddress, ServerProtocol } from "../../rest/constants";
 
 interface ImageResultData {
     image: Image
@@ -30,7 +31,7 @@ const ImageResult: React.FC<ImageResultData> = ({ image }) => {
     return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost">
         <HStack w="full" h="full" alignItems="flex-start">
             <Center w="fit-content" h="100%">
-                <Box bg="red" w="150px" h="90px" />
+                <ImageElement w="auto" h="100%" src={ServerProtocol + ServerAddress + "/images/contents/" + image.id + "?thumb=true"} fit="contain" />
             </Center>
             <VStack w="full" padding={"8px"} alignItems="flex-start">
                 <Heading color="white">{image.id}</Heading>
