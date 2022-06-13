@@ -159,12 +159,27 @@ export function useImages(query: ImageQuery) {
         throw new Error(error)
     }
 
-    console.info("data", data)
-    console.info("query", query)
-
     return {
-        images: data,
+        images: data as Image[],
         isLoading: !error && !data,
         isError: false
+    }
+}
+
+export function useImage(imageID: string) {
+    // TODO: validate the imageID
+    const { data, error } = useSWR(ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID), fetcher)
+    if (error) {
+        return {
+            image: null,
+            isLoading: false,
+            err: error
+        }
+    }
+
+    return {
+        image: data as Image,
+        isLoading: !error && !data,
+        err: null
     }
 }

@@ -5,6 +5,7 @@ import { ServerAddress, ServerProtocol } from "../../rest/constants";
 
 interface ImageResultData {
     image: Image
+    onClick?: (imageID: string) => void
 }
 
 function pastelColorForText(text: string) {
@@ -27,8 +28,8 @@ function generateTag(tagID: number) {
     </Box>
 }
 
-const ImageResult: React.FC<ImageResultData> = ({ image }) => {
-    return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost">
+const ImageResult: React.FC<ImageResultData> = ({ image, onClick }) => {
+    return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost" onClick={e => onClick && onClick(image.id)}>
         <HStack w="full" h="full" alignItems="flex-start">
             <Center w="fit-content" h="100%">
                 <ImageElement w="auto" h="100%" src={ServerProtocol + ServerAddress + "/images/contents/" + image.id + "?thumb=true"} fit="contain" />

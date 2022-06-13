@@ -22,12 +22,12 @@ import QuestionComplete from "../../../src/components/tagging/questioncomplete";
 import Buttons from "../../../src/components/tagging/buttons";
 import { ServerAddress, ServerProtocol } from "../../../src/rest/constants"
 import { FaHome } from 'react-icons/fa'
+import ImageRender from "../../../src/components/imagerender";
 
 interface TaggingProps {
     ImageID: string
     Questions: Question[]
     SelectedTags: number[]
-    MIMEType: string
 }
 
 interface TaggingState {
@@ -108,28 +108,10 @@ class Tagging extends Component<TaggingProps, TaggingState> {
         return <QuestionSelect question={this.props.Questions[this.state.QuestionIndex]} selectionAdded={this.selectionAdded} selectionRemoved={this.selectionRemoved} selectedTags={this.state.SelectedTags} />
     }
 
-    getImageSection() {
-        if (this.props.MIMEType == undefined) {
-            return <Text color="white">MIME type is not set!</Text>
-        }
-        if (this.props.MIMEType.startsWith("video")) {
-            return <video width="full" controls loop autoPlay muted>
-                <source src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} type="video/mp4" />
-                Your browser does not support the video tag.
-            </video>
-        } else if (this.props.MIMEType.startsWith("image")) {
-            return <Image src={ServerProtocol + ServerAddress + "/images/contents/" + this.props.ImageID} h="100vh" w="full" objectFit="contain" />
-        } else {
-            return <Text>Unknown MIME type</Text>
-        }
-    }
-
     render() {
         return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
             <GridItem colSpan={1} w="full" flex="1">
-                <Center w="full" h="full">
-                    {this.getImageSection()}
-                </Center>
+                <ImageRender imageID={this.props.ImageID} w="full" h="full" />
             </GridItem>
             <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
                 <VStack w="full" padding={3} spacing={10}>
@@ -156,6 +138,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     if (context.params == null || context.params.imageid == null || typeof (context.params.imageid) != "string") {
         throw new Error("parameter 'imageid' is required but not provided")
     }
+    // TODO: this can be done client-side
     const questions = await listQuestions()
 
     if (questions == null) {
@@ -172,12 +155,17 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return 0
     })
 
+    // Fetch the image so we know what tags are already set
+    // We *could* move this to be client-side but this is data-critical:
+    // We don't want to accidentally lose tags because we started editing them before
+    // we loaded the original ones.
+    //
+    // This way we must finish loading the tags at least once before we can start tagging
     const image = await getImage(context.params.imageid)
 
     var data: TaggingProps = {
         Questions: questions,
         ImageID: context.params.imageid,
-        MIMEType: image.mimeType,
         SelectedTags: image.tags,
     }
     return {

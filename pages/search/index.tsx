@@ -1,4 +1,5 @@
 import { GridItem, SimpleGrid, VStack, Heading, Box, Button, Spinner } from "@chakra-ui/react"
+import { NextRouter, useRouter } from "next/router"
 import ImageResult from "../../src/components/search/imageresult"
 import SelectedTagList from "../../src/components/search/tags/selectedtaglist"
 import TagSelectList from "../../src/components/search/tags/tagselectlist"
@@ -6,7 +7,11 @@ import useImageQuery from "../../src/hooks/imagequery"
 import { Image, useImages } from "../../src/rest/images"
 import { DedupList } from "../../src/util"
 
-function getImagesSection(loading: boolean, data: Image[] | null | undefined) {
+function onImageResultClick(router: NextRouter, imageID: string) {
+    router.push(`/view/${imageID}`)
+}
+
+function getImagesSection(router: NextRouter, loading: boolean, data: Image[] | null | undefined) {
     if (loading) {
         return <Spinner />
     }
@@ -16,7 +21,7 @@ function getImagesSection(loading: boolean, data: Image[] | null | undefined) {
     }
 
     return <VStack alignItems="flex-start" w="full" spacing="1px">
-        {data.map(img => <ImageResult key={img.id} image={img} />)}
+        {data.map(img => <ImageResult key={img.id} image={img} onClick={imageID => onImageResultClick(router, imageID)} />)}
     </VStack>
 }
 
@@ -24,6 +29,8 @@ const Index: React.FC = () => {
     const { query, setMode, setTagState } = useImageQuery()
 
     const { images, isLoading, isError } = useImages(query)
+
+    const router = useRouter()
 
     return <SimpleGrid columns={3} columnGap={1} height="100vh" width="100vw" maxW="100vw" bg="gray.900" gridTemplateColumns="min-content min-content auto" overflowX="clip" overflowY="hidden">
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
@@ -42,7 +49,7 @@ const Index: React.FC = () => {
         </GridItem>
         <GridItem bg="gray.700" padding="10px" overflowY="scroll">
             { /* TODO: replace this with a Chakra SimpleGrid to get that nice file grid layout */}
-            {getImagesSection(isLoading, images)}
+            {getImagesSection(router, isLoading, images)}
         </GridItem>
     </SimpleGrid>
 }
