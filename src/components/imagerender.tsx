@@ -5,7 +5,8 @@ import ReactPlayer from 'react-player/lazy'
 
 interface ImageRenderProps {
     imageID: string
-    w: any, h: any
+    w?: any, h?: any
+    onClick?: () => void
 }
 
 function selectImageElement(w: any, h: any, mimeType: string, imageID: string) {
@@ -15,7 +16,7 @@ function selectImageElement(w: any, h: any, mimeType: string, imageID: string) {
     if (mimeType.startsWith("video")) {
         return <ReactPlayer controls playing muted width={w} height={h} url={ServerProtocol + ServerAddress + "/images/contents/" + imageID} />
     } else if (mimeType.startsWith("image")) {
-        return <ChakraImage src={ServerProtocol + ServerAddress + "/images/contents/" + imageID} h={h} w={w} objectFit="contain" />
+        return <ChakraImage src={ServerProtocol + ServerAddress + "/images/contents/" + imageID} h="full" w={w} objectFit="contain" />
     } else {
         return <Text>Unknown MIME type</Text>
     }
@@ -35,10 +36,10 @@ function selectImageSection(w: any, h: any, imageID: string, image: Image | null
     return <Spinner size="xl" />
 }
 
-const ImageRender: React.FC<ImageRenderProps> = ({ imageID, w, h }) => {
+const ImageRender: React.FC<ImageRenderProps> = ({ imageID, w, h, onClick }) => {
     const { image, isLoading, err } = useImage(imageID)
 
-    return <Center w="full" h="100vh" maxH="100vh">
+    return <Center w={w} h={h} maxH="100vh" onClick={() => onClick && onClick()}>
         {selectImageSection(w, h, imageID, image, isLoading, err)}
     </Center>
 }

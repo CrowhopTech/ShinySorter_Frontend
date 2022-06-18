@@ -4,8 +4,8 @@ import { parseQueryMode, ImageQueryMode, ImageQuery } from "../rest/images";
 
 const includeModeParam = "includeMode"
 const excludeModeParam = "excludeMode"
-const includedTagsParam = "includedTags"
-const excludedTagsParam = "excludedTags"
+const includedTagsParam = "includeTags"
+const excludedTagsParam = "excludeTags"
 
 function parseIntParam(input: undefined | string | string[]): number[] {
     if (input === undefined) {
@@ -113,7 +113,11 @@ function useImageQuery() {
     }, [router.query[excludedTagsParam]])
 
     const query = new ImageQuery(includeMode, excludeMode, includedTags, excludedTags)
-    return { query, setMode, setTagState }
+    const queryProvided = (includeModeParam in router.query) ||
+        (excludeModeParam in router.query) ||
+        (includedTagsParam in router.query) ||
+        (excludedTagsParam in router.query)
+    return { query, queryProvided, setMode, setTagState }
 }
 
 export default useImageQuery

@@ -156,13 +156,17 @@ export async function updateImageTags(imageID: string, selectedTags: number[], m
 export function useImages(query: ImageQuery) {
     const { data, error } = useSWR(query.getURL(), fetcher)
     if (error) {
-        throw new Error(error)
+        return {
+            images: [],
+            isLoading: false,
+            err: error
+        }
     }
 
     return {
         images: data as Image[],
         isLoading: !error && !data,
-        isError: false
+        err: null
     }
 }
 
