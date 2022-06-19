@@ -32,7 +32,7 @@ const ImageResult: React.FC<ImageResultData> = ({ image, onClick }) => {
     return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost" onClick={e => onClick && onClick(image.id)}>
         <HStack w="full" h="full" alignItems="flex-start">
             <Center w="fit-content" h="100%">
-                <ImageElement w="auto" h="100%" src={ServerProtocol + ServerAddress + "/images/contents/" + image.id + "?thumb=true"} fit="contain" />
+                <ImageElement maxW="200px" minW="200px" h="100%" src={ServerProtocol + ServerAddress + "/images/contents/" + image.id + "?thumb=true"} fit="contain" />
             </Center>
             <VStack w="full" padding={"8px"} alignItems="flex-start">
                 <Heading color="white">{image.id}</Heading>

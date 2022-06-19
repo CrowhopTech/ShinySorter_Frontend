@@ -38,19 +38,27 @@ export class ImageQuery {
         this.tagged = tagged !== undefined ? tagged : true
     }
 
-    getURL() {
-        const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint)
-        const requestURL = new URL(requestPath);
-        requestURL.searchParams.append("hasBeenTagged", this.tagged.toString())
+    getQueryParams(): URLSearchParams {
+        const params = new URLSearchParams()
+        params.append("hasBeenTagged", this.tagged.toString())
         if (this.includeTags.length > 0) {
-            requestURL.searchParams.append("includeTags", this.includeTags.join(","))
-            requestURL.searchParams.append("includeOperator", this.includeMode)
+            params.append("includeTags", this.includeTags.join(","))
+            params.append("includeOperator", this.includeMode)
         }
         if (this.excludeTags.length > 0) {
-            requestURL.searchParams.append("excludeTags", this.excludeTags.join(","))
-            requestURL.searchParams.append("excludeOperator", this.excludeMode)
+            params.append("excludeTags", this.excludeTags.join(","))
+            params.append("excludeOperator", this.excludeMode)
         }
-        return requestURL.toString()
+        return params
+    }
+
+    appendQueryParams(input: URL): URL {
+        this.getQueryParams().forEach((value, key) => input.searchParams.append(key, value))
+        return input
+    }
+
+    getURL() {
+        return this.appendQueryParams(new URL(ServerProtocol + path.join(ServerAddress, imagesEndpoint))).toString()
     }
 }
 
