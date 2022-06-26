@@ -18,13 +18,15 @@ export class Question {
     orderingID: number
     requiresQuestion: number
     questionText: string
+    mutuallyExclusive: boolean
     tagOptions: TagOption[]
 
-    constructor(id: number, orderingID: number, requiresQuestion: number, questionText: string, tagOptions: TagOption[]) {
+    constructor(id: number, orderingID: number, requiresQuestion: number, questionText: string, mutuallyExclusive: boolean, tagOptions: TagOption[]) {
         this.questionID = id
         this.orderingID = orderingID
         this.requiresQuestion = requiresQuestion
         this.questionText = questionText
+        this.mutuallyExclusive = mutuallyExclusive
         this.tagOptions = tagOptions
     }
 }
