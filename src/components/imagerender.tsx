@@ -29,7 +29,7 @@ function selectImageSection(w: any, h: any, imageID: string, image: Image | null
     }
     // If we have an error to show, always try to show it
     if (err != null) {
-        return <Text>Failed to load image '{imageID}': {err.toString()}</Text>
+        return <Text color="white">Failed to load image '{imageID}': {err.toString()}</Text>
     }
 
     // Default to showing a spinner

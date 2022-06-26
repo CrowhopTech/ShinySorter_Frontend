@@ -21,10 +21,10 @@ function getImagesArray(currentImageID: string, { images, isLoading, err }: Retu
         return <Spinner />
     }
     if (err != null) {
-        return <Text>Failed to load images: {err}</Text>
+        return <Text color="white">Failed to load images: {err}</Text>
     }
     if (images == null) {
-        return <Text>No images found</Text>
+        return <Text color="white">No images found</Text>
     }
 
     return images.map(image => {
