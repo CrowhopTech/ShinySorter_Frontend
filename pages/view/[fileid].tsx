@@ -14,9 +14,7 @@ function getBackgroundBox() {
     return <Box position="fixed" top="0" bottom="0" left="0" right="0" bg="gray.900" zIndex={-1} />
 }
 
-function getFilesArray(currentFileID: string, { files, isLoading, err }: ReturnType<typeof useFiles>, query: FileQuery) {
-    const router = useRouter();
-
+function getFilesArray(router: NextRouter, currentFileID: string, { files, isLoading, err }: ReturnType<typeof useFiles>, query: FileQuery) {
     if (isLoading) {
         return <Spinner />
     }
@@ -33,7 +31,7 @@ function getFilesArray(currentFileID: string, { files, isLoading, err }: ReturnT
             outlined = true
         }
         // TODO: fetch file contents through SRF, if we can?
-        return <Image
+        return <Image key={file.id} alt={file.id}
             _hover={{ opacity: 0.5 }} transition="opacity .2s" cursor="pointer"
             border={outlined ? "4px" : "0px"} borderColor="white" borderRadius="4px" outline="none" h="full"
             fit="contain" src={ServerProtocol + ServerAddress + "/files/contents/" + file.id + "?thumb=true"}
@@ -131,7 +129,7 @@ const ViewFilePage: React.FC = () => {
         return function cleanup() {
             document.removeEventListener('keydown', handleKeyDown);
         }
-    }, [fileID, query]);
+    }, [fileID, query, files, router]);
 
     if (!router.isReady) {
         return <Center w="100vw" h="100vh"><Spinner size="xl" /></Center>
@@ -149,7 +147,7 @@ const ViewFilePage: React.FC = () => {
         <FileRender fileID={fileID} w="100vw" h="100vh" />
         <GalleryBar edgeBorder={navButtonWidth} onReturnClick={() => returnToSearch(router, query)}>
             {
-                getFilesArray(fileID, { files, isLoading, err }, query)
+                getFilesArray(router, fileID, { files, isLoading, err }, query)
             }
         </GalleryBar>
         {getNavButton(router, "previous", fileID, files, query)}
