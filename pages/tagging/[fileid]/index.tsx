@@ -1,18 +1,15 @@
 import { GetServerSidePropsContext } from "next"
 import { Component } from "react"
 import { listQuestions, Question } from "../../../src/rest/questions"
-import { getImage, updateImageTags } from "../../../src/rest/images";
+import { getFile, updateFileTags } from "../../../src/rest/files";
 import {
     VStack,
     Divider,
     GridItem,
     Heading,
-    Text,
     Link,
     Progress,
     SimpleGrid,
-    Image,
-    Center,
     Spacer,
     Flex,
     IconButton
@@ -20,12 +17,11 @@ import {
 import QuestionSelect from "../../../src/components/tagging/questionselect";
 import QuestionComplete from "../../../src/components/tagging/questioncomplete";
 import Buttons from "../../../src/components/tagging/buttons";
-import { ServerAddress, ServerProtocol } from "../../../src/rest/constants"
 import { FaHome } from 'react-icons/fa'
-import ImageRender from "../../../src/components/imagerender";
+import FileRender from "../../../src/components/filerender";
 
 interface TaggingProps {
-    ImageID: string
+    FileID: string
     Questions: Question[]
     SelectedTags: number[]
 }
@@ -70,12 +66,12 @@ class Tagging extends Component<TaggingProps, TaggingState> {
     }
 
     async saveClick() {
-        await updateImageTags(this.props.ImageID, this.selectedTags, true)
-        window.open("/tagging/newimg", "_self")
+        await updateFileTags(this.props.FileID, this.selectedTags, true)
+        window.open("/tagging/newfile", "_self")
     }
 
     goHome() {
-        var confirmed = confirm("If you are in the middle of tagging an image, the tags will not be saved. Proceed?");
+        var confirmed = confirm("If you are in the middle of tagging a file, the tags will not be saved. Proceed?");
         if (confirmed) {
             window.open("/", "_self")
         }
@@ -111,7 +107,7 @@ class Tagging extends Component<TaggingProps, TaggingState> {
     render() {
         return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
             <GridItem colSpan={1} w="full" flex="1">
-                <ImageRender imageID={this.props.ImageID} w="full" h="full" />
+                <FileRender fileID={this.props.FileID} w="full" h="full" />
             </GridItem>
             <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
                 <VStack w="full" padding={3} spacing={10}>
@@ -122,7 +118,7 @@ class Tagging extends Component<TaggingProps, TaggingState> {
                             <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={this.goHome}></IconButton>
                         </Flex>
                         <Progress w="full" value={Math.min(this.state.QuestionIndex / this.props.Questions.length, 1.0) * 100} />
-                        <Link href="/tagging/newimg">Skip this image for now</Link>
+                        <Link href="/tagging/newfile">Skip this image for now</Link>
                     </VStack>
                     <Divider />
                     {this.getQuestionSection()}
@@ -135,8 +131,8 @@ class Tagging extends Component<TaggingProps, TaggingState> {
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    if (context.params == null || context.params.imageid == null || typeof (context.params.imageid) != "string") {
-        throw new Error("parameter 'imageid' is required but not provided")
+    if (context.params == null || context.params.fileid == null || typeof (context.params.fileid) != "string") {
+        throw new Error("parameter 'fileid' is required but not provided")
     }
     // TODO: this can be done client-side
     const questions = await listQuestions()
@@ -155,18 +151,18 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
         return 0
     })
 
-    // Fetch the image so we know what tags are already set
+    // Fetch the file so we know what tags are already set
     // We *could* move this to be client-side but this is data-critical:
     // We don't want to accidentally lose tags because we started editing them before
     // we loaded the original ones.
     //
     // This way we must finish loading the tags at least once before we can start tagging
-    const image = await getImage(context.params.imageid)
+    const file = await getFile(context.params.fileid)
 
     var data: TaggingProps = {
         Questions: questions,
-        ImageID: context.params.imageid,
-        SelectedTags: image.tags,
+        FileID: context.params.fileid,
+        SelectedTags: file.tags,
     }
     return {
         props: data,

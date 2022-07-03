@@ -1,6 +1,6 @@
 import { NextRouter, useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import { parseQueryMode, ImageQueryMode, ImageQuery } from "../rest/images";
+import { parseQueryMode, FileQueryMode, FileQuery } from "../rest/files";
 
 const includeModeParam = "includeMode"
 const excludeModeParam = "excludeMode"
@@ -25,7 +25,7 @@ function parseIntParam(input: undefined | string | string[]): number[] {
 }
 
 function updateParamsAndNavigate(router: NextRouter,
-    includeMode: ImageQueryMode | undefined, excludeMode: ImageQueryMode | undefined, includedTags: number[] | undefined, excludedTags: number[] | undefined) {
+    includeMode: FileQueryMode | undefined, excludeMode: FileQueryMode | undefined, includedTags: number[] | undefined, excludedTags: number[] | undefined) {
     let currentUrlParams = new URLSearchParams(window.location.search)
     if (includeMode !== undefined) {
         currentUrlParams.set(includeModeParam, includeMode.toString())
@@ -42,7 +42,7 @@ function updateParamsAndNavigate(router: NextRouter,
     router.push(window.location.pathname + "?" + currentUrlParams.toString(), undefined, { shallow: true })
 }
 
-function useImageQuery() {
+function useFileQuery() {
     const router = useRouter();
 
     const [includeMode, setIncludeMode] = useState((includeModeParam in router.query) ? parseQueryMode(router.query[includeModeParam]) : "all")
@@ -50,7 +50,7 @@ function useImageQuery() {
     const [includedTags, setIncludedTags] = useState((includedTagsParam in router.query) ? parseIntParam(router.query[includedTagsParam]) : [])
     const [excludedTags, setExcludedTags] = useState((excludedTagsParam in router.query) ? parseIntParam(router.query[excludedTagsParam]) : [])
 
-    function setMode(which: "include" | "exclude", newValue: ImageQueryMode) {
+    function setMode(which: "include" | "exclude", newValue: FileQueryMode) {
         if (which == "include") {
             updateParamsAndNavigate(router, newValue, undefined, undefined, undefined)
         } else if (which == "exclude") {
@@ -112,7 +112,7 @@ function useImageQuery() {
         setExcludedTags(excludedTagsParam in router.query ? parseIntParam(router.query[excludedTagsParam]) : [])
     }, [router.query[excludedTagsParam]])
 
-    const query = new ImageQuery(includeMode, excludeMode, includedTags, excludedTags)
+    const query = new FileQuery(includeMode, excludeMode, includedTags, excludedTags)
     const queryProvided = (includeModeParam in router.query) ||
         (excludeModeParam in router.query) ||
         (includedTagsParam in router.query) ||
@@ -120,4 +120,4 @@ function useImageQuery() {
     return { query, queryProvided, setMode, setTagState }
 }
 
-export default useImageQuery
+export default useFileQuery

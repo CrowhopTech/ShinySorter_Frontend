@@ -1,11 +1,11 @@
 import { GetServerSideProps } from "next"
-import { ImageQuery, listImages } from "../../../src/rest/images"
+import { FileQuery, listFiles } from "../../../src/rest/files"
 
 const Index = () => { }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
     // TODO: select a new random image and redirect to it
-    const images = await listImages(new ImageQuery(undefined, undefined, undefined, undefined, false))
+    const images = await listFiles(new FileQuery(undefined, undefined, undefined, undefined, false))
     if (images == null) {
         throw new Error("images is null")
     }
@@ -13,17 +13,17 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     if (images.length == 0) {
         return {
             redirect: {
-                destination: "/tagging/noimages",
+                destination: "/tagging/nofiles",
                 permanent: false,
             }
         }
     }
 
     const index = Math.min(Math.round(Math.random() * (images.length - 1)), images.length - 1)
-    const img = images[index]
+    const file = images[index]
     return {
         redirect: {
-            destination: img.id,
+            destination: file.id,
             permanent: false,
         }
     }

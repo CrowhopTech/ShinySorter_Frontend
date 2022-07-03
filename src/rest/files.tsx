@@ -5,9 +5,9 @@ import useSWR from "swr"
 
 const fetcher = (input: RequestInfo, init?: RequestInit | undefined) => fetch(input, init).then(res => res.json())
 
-const imagesEndpoint = "images"
+const filesEndpoint = "files"
 
-export class Image {
+export class File {
     id: string
     md5sum: string
     tags: number[]
@@ -21,16 +21,16 @@ export class Image {
     }
 }
 
-export type ImageQueryMode = "any" | "all"
+export type FileQueryMode = "any" | "all"
 
-export class ImageQuery {
-    includeMode: ImageQueryMode
-    excludeMode: ImageQueryMode
+export class FileQuery {
+    includeMode: FileQueryMode
+    excludeMode: FileQueryMode
     includeTags: number[]
     excludeTags: number[]
     tagged: boolean
 
-    constructor(includeMode?: ImageQueryMode, excludeMode?: ImageQueryMode, includedTags?: number[], excludedTags?: number[], tagged?: boolean) {
+    constructor(includeMode?: FileQueryMode, excludeMode?: FileQueryMode, includedTags?: number[], excludedTags?: number[], tagged?: boolean) {
         this.includeMode = includeMode ? includeMode : "all"
         this.excludeMode = excludeMode ? excludeMode : "all"
         this.includeTags = includedTags ? includedTags : []
@@ -58,11 +58,11 @@ export class ImageQuery {
     }
 
     getURL() {
-        return this.appendQueryParams(new URL(ServerProtocol + path.join(ServerAddress, imagesEndpoint))).toString()
+        return this.appendQueryParams(new URL(ServerProtocol + path.join(ServerAddress, filesEndpoint))).toString()
     }
 }
 
-export function parseQueryMode(input: string | string[] | undefined): ImageQueryMode {
+export function parseQueryMode(input: string | string[] | undefined): FileQueryMode {
     if (typeof input !== "string") {
         throw new Error(`Invalid type ${typeof input} for query mode, must be string`)
     }
@@ -76,7 +76,7 @@ export function parseQueryMode(input: string | string[] | undefined): ImageQuery
     }
 }
 
-export async function listImages(query: ImageQuery): Promise<Image[] | null> {
+export async function listFiles(query: FileQuery): Promise<File[] | null> {
     const response = await fetch(query.getURL(), {
         method: "GET",
     }).catch(err => {
@@ -99,14 +99,14 @@ export async function listImages(query: ImageQuery): Promise<Image[] | null> {
         throw new Error(`Error decoding JSON: ${err}`)
     }).then(j => {
         if (j == "[]") {
-            return [] as Image[]
+            return [] as File[]
         }
-        return j as Image[]
+        return j as File[]
     })
 }
 
-export async function getImage(imageID: string): Promise<Image> {
-    const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID)
+export async function getFile(fileID: string): Promise<File> {
+    const requestPath = ServerProtocol + path.join(ServerAddress, filesEndpoint, fileID)
     const response = await fetch(requestPath, {
         method: "GET",
     }).catch(err => {
@@ -128,13 +128,13 @@ export async function getImage(imageID: string): Promise<Image> {
         console.error(`Error decoding JSON: ${err}`)
         throw new Error(`Error decoding JSON: ${err}`)
     }).then(j => {
-        return j as Image
+        return j as File
     })
 }
 
-export async function updateImageTags(imageID: string, selectedTags: number[], markAsTagged: boolean | undefined = undefined): Promise<void> {
-    // TODO: sanitize imageID
-    const requestPath = ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID)
+export async function updateFileTags(fileID: string, selectedTags: number[], markAsTagged: boolean | undefined = undefined): Promise<void> {
+    // TODO: sanitize fileID
+    const requestPath = ServerProtocol + path.join(ServerAddress, filesEndpoint, fileID)
     const requestBody = {
         "tags": selectedTags,
         "hasBeenTagged": markAsTagged
@@ -161,36 +161,36 @@ export async function updateImageTags(imageID: string, selectedTags: number[], m
     }
 }
 
-export function useImages(query: ImageQuery) {
+export function useFiles(query: FileQuery) {
     const { data, error } = useSWR(query.getURL(), fetcher)
     if (error) {
         return {
-            images: [],
+            files: [],
             isLoading: false,
             err: error
         }
     }
 
     return {
-        images: data as Image[],
+        files: data as File[],
         isLoading: !error && !data,
         err: null
     }
 }
 
-export function useImage(imageID: string) {
-    // TODO: validate the imageID
-    const { data, error } = useSWR(ServerProtocol + path.join(ServerAddress, imagesEndpoint, imageID), fetcher)
+export function useFile(fileID: string) {
+    // TODO: validate the fileID
+    const { data, error } = useSWR(ServerProtocol + path.join(ServerAddress, filesEndpoint, fileID), fetcher)
     if (error) {
         return {
-            image: null,
+            file: null,
             isLoading: false,
             err: error
         }
     }
 
     return {
-        image: data as Image,
+        file: data as File,
         isLoading: !error && !data,
         err: null
     }

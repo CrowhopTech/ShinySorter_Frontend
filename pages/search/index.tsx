@@ -1,18 +1,18 @@
 import { GridItem, SimpleGrid, VStack, Heading, Box, Button, Spinner } from "@chakra-ui/react"
 import { NextRouter, useRouter } from "next/router"
-import ImageResult from "../../src/components/search/imageresult"
+import FileResult from "../../src/components/search/fileresult"
 import SelectedTagList from "../../src/components/search/tags/selectedtaglist"
 import TagSelectList from "../../src/components/search/tags/tagselectlist"
-import useImageQuery from "../../src/hooks/imagequery"
-import { Image, ImageQuery, useImages } from "../../src/rest/images"
+import useFileQuery from "../../src/hooks/filequery"
+import { File, FileQuery, useFiles } from "../../src/rest/files"
 import { DedupList } from "../../src/util"
 
-function onImageResultClick(router: NextRouter, imageID: string, query: ImageQuery) {
-    let url = new URL("/view/" + imageID, window.location.protocol + window.location.host)
+function onFileResultClick(router: NextRouter, fileID: string, query: FileQuery) {
+    let url = new URL("/view/" + fileID, window.location.protocol + window.location.host)
     router.push(query.appendQueryParams(url))
 }
 
-function getImagesSection(router: NextRouter, loading: boolean, data: Image[] | null | undefined, query: ImageQuery) {
+function getFilesSection(router: NextRouter, loading: boolean, data: File[] | null | undefined, query: FileQuery) {
     if (loading) {
         return <Spinner />
     }
@@ -22,16 +22,16 @@ function getImagesSection(router: NextRouter, loading: boolean, data: Image[] | 
     }
 
     return <VStack alignItems="flex-start" w="full" spacing="1px">
-        {data.map(img => <ImageResult key={img.id} image={img} onClick={imageID => onImageResultClick(router, imageID, query)} />)}
+        {data.map(file => <FileResult key={file.id} file={file} onClick={fileID => onFileResultClick(router, fileID, query)} />)}
     </VStack>
 }
 
 const Index: React.FC = () => {
 
     const router = useRouter()
-    const { query, setMode, setTagState } = useImageQuery()
+    const { query, setMode, setTagState } = useFileQuery()
 
-    const { images, isLoading, err } = useImages(query)
+    const { files, isLoading, err } = useFiles(query)
     if (isLoading) {
         return <Spinner />
     }
@@ -56,7 +56,7 @@ const Index: React.FC = () => {
         </GridItem>
         <GridItem bg="gray.700" padding="10px" overflowY="scroll">
             { /* TODO: replace this with a Chakra SimpleGrid to get that nice file grid layout */}
-            {getImagesSection(router, isLoading, images, query)}
+            {getFilesSection(router, isLoading, files, query)}
         </GridItem>
     </SimpleGrid>
 }

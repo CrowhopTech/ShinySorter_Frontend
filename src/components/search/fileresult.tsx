@@ -1,10 +1,10 @@
 import { Box, Button, Center, Heading, HStack, Spinner, Text, VStack, Image as ImageElement } from "@chakra-ui/react";
 import { useTag } from "../../rest/tags";
-import { Image } from "../../rest/images"
+import { File } from "../../rest/files"
 import { ServerAddress, ServerProtocol } from "../../rest/constants";
 
-interface ImageResultData {
-    image: Image
+interface FileResultData {
+    file: File
     onClick?: (imageID: string) => void
 }
 
@@ -28,20 +28,20 @@ function generateTag(tagID: number) {
     </Box>
 }
 
-const ImageResult: React.FC<ImageResultData> = ({ image, onClick }) => {
-    return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost" onClick={e => onClick && onClick(image.id)}>
+const FileResult: React.FC<FileResultData> = ({ file, onClick }) => {
+    return <Button w="full" h="150px" colorScheme="whiteAlpha" variant="ghost" onClick={e => onClick && onClick(file.id)}>
         <HStack w="full" h="full" alignItems="flex-start">
             <Center w="fit-content" h="100%">
-                <ImageElement maxW="200px" minW="200px" h="100%" src={ServerProtocol + ServerAddress + "/images/contents/" + image.id + "?thumb=true"} fit="contain" />
+                <ImageElement maxW="200px" minW="200px" h="100%" src={ServerProtocol + ServerAddress + "/files/contents/" + file.id + "?thumb=true"} fit="contain" />
             </Center>
             <VStack w="full" padding={"8px"} alignItems="flex-start">
-                <Heading color="white">{image.id}</Heading>
+                <Heading color="white">{file.id}</Heading>
                 <HStack w="full" alignItems="flex-start" flexWrap="wrap">
-                    {image.tags.map(generateTag)}
+                    {file.tags.map(generateTag)}
                 </HStack>
             </VStack>
         </HStack>
     </Button>
 }
 
-export default ImageResult;
+export default FileResult;
