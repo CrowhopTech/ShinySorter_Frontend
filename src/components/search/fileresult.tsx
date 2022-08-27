@@ -17,6 +17,9 @@ function pastelColorForText(text: string) {
 }
 
 function generateTag(tags: Tag[], isLoading: boolean, tagID: number) {
+    if (!tags) {
+        return <Spinner key={tagID} />
+    }
     const tagIdx = tags.findIndex(t => t.id == tagID)
     if (tagIdx < 0) {
         return <Text size="sm" color="gray.900">Unknown Tag</Text>
