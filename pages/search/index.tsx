@@ -1,5 +1,6 @@
-import { GridItem, SimpleGrid, VStack, Heading, Box, Button, Spinner } from "@chakra-ui/react"
+import { GridItem, SimpleGrid, VStack, Heading, Box, Button, Spinner, IconButton } from "@chakra-ui/react"
 import { NextRouter, useRouter } from "next/router"
+import { FaHome } from "react-icons/fa"
 import FileResult from "../../src/components/search/fileresult"
 import SelectedTagList from "../../src/components/search/tags/selectedtaglist"
 import TagSelectList from "../../src/components/search/tags/tagselectlist"
@@ -26,6 +27,13 @@ function getFilesSection(router: NextRouter, loading: boolean, data: File[] | nu
     </VStack>
 }
 
+function goHome(router: NextRouter) {
+    var confirmed = confirm("Would you like to return home?");
+    if (confirmed) {
+        router.push("/")
+    }
+}
+
 const Index: React.FC = () => {
 
     const router = useRouter()
@@ -41,6 +49,7 @@ const Index: React.FC = () => {
 
     return <SimpleGrid columns={3} columnGap={1} height="100vh" width="100vw" maxW="100vw" bg="gray.900" gridTemplateColumns="min-content min-content auto" overflowX="clip" overflowY="hidden">
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
+            <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={_ => goHome(router)} marginBottom="6px"></IconButton>
             <TagSelectList hideTags={[...query.includeTags, ...query.excludeTags]} tagSelected={(tagID, state) => setTagState(tagID, state)} />
         </GridItem>
         <GridItem bg="gray.700" w="fit-content" minW="250px" padding="10px">
@@ -58,7 +67,7 @@ const Index: React.FC = () => {
             { /* TODO: replace this with a Chakra SimpleGrid to get that nice file grid layout */}
             {getFilesSection(router, isLoading, files, query)}
         </GridItem>
-    </SimpleGrid>
+    </SimpleGrid >
 }
 
 export default Index
