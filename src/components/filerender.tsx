@@ -1,5 +1,5 @@
 import { Heading, Text, Image as ChakraImage, Spinner, Center } from "@chakra-ui/react"
-import { ServerAddress, ServerProtocol } from "../rest/constants"
+import { ServerAddress, ServerProtocol } from "../rest/address"
 import { useFile, File } from "../rest/files"
 import ReactPlayer from 'react-player/lazy'
 

@@ -1,4 +1,4 @@
-import { ServerAddress, ServerProtocol } from "./constants"
+import { ServerAddress, ServerProtocol } from "./address"
 import path from "path"
 import useSWR from "swr"
 

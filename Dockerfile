@@ -31,16 +31,21 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next ./.next
+COPY docker-entrypoint.sh ./docker-entrypoint.sh
 
 USER nextjs
 
 EXPOSE 3000
 
 ENV PORT 3000
+ENV API_SERVER_BASEPATH ""
+ENV BASEPATH ""
 
 # Next.js collects completely anonymous telemetry data about general usage.
 # Learn more here: https://nextjs.org/telemetry
 # Uncomment the following line in case you want to disable telemetry.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD ["node_modules/.bin/next", "start"]
+# Override the node image's entrypoint with /usr/bin/env which will run anything you give it
+ENTRYPOINT [ "/usr/bin/env" ]
+CMD [ "sh", "docker-entrypoint.sh"]

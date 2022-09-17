@@ -1,7 +1,7 @@
 import { Box, Button, Center, Heading, HStack, Spinner, Text, VStack, Image as ImageElement } from "@chakra-ui/react";
 import { Tag, useTag, useTags } from "../../rest/tags";
 import { File } from "../../rest/files"
-import { ServerAddress, ServerProtocol } from "../../rest/constants";
+import { ServerAddress, ServerProtocol } from "../../rest/address";
 
 interface FileResultData {
     file: File

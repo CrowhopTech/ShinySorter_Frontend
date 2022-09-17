@@ -5,7 +5,7 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa"
 import FileRender from "../../src/components/filerender"
 import GalleryBar from "../../src/components/search/gallerybar"
 import useFileQuery from "../../src/hooks/filequery"
-import { ServerAddress, ServerProtocol } from "../../src/rest/constants"
+import { ServerAddress, ServerProtocol } from "../../src/rest/address"
 import { FileQuery, useFiles, File, getFile } from "../../src/rest/files"
 
 const navButtonWidth = "25px"
