@@ -82,9 +82,9 @@ class QuestionSelect extends Component<QuestionSelectData> {
           <Radio key={Math.random()} value={-1}>(none)</Radio>
           {
             this.props.question.tagOptions.map(opt => (
-              <Radio key={Math.random()}
+              <Radio key={opt.tagID}
                 value={opt.tagID}
-                isChecked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Radio>
+                checked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Radio>
             ))
           }
         </VStack>
@@ -92,10 +92,10 @@ class QuestionSelect extends Component<QuestionSelectData> {
     }
 
     return this.props.question.tagOptions.map(opt => (
-      <Checkbox key={Math.random()}
+      <Checkbox key={opt.tagID}
         onChange={this.onChange}
         value={opt.tagID}
-        isChecked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Checkbox>
+        checked={this.props.selectedTags.indexOf(opt.tagID) != -1}>{opt.optionText}</Checkbox>
     ))
   }
 

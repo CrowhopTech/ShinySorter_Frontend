@@ -1,5 +1,5 @@
 import { GetServerSidePropsContext } from "next"
-import { Component } from "react"
+import { Component, useState } from "react"
 import { listQuestions, Question } from "../../../src/rest/questions"
 import { getFile, updateFileTags } from "../../../src/rest/files";
 import {
@@ -19,6 +19,7 @@ import QuestionComplete from "../../../src/components/tagging/questioncomplete";
 import Buttons from "../../../src/components/tagging/buttons";
 import { FaHome } from 'react-icons/fa'
 import FileRender from "../../../src/components/filerender";
+import { NextRouter, useRouter } from "next/router";
 
 interface TaggingProps {
     FileID: string
@@ -26,108 +27,70 @@ interface TaggingProps {
     SelectedTags: number[]
 }
 
-interface TaggingState {
-    QuestionIndex: number // Which index we're at in the list of questions
-    SelectedTags: number[]
-}
+const Tagging: React.FC<TaggingProps> = (props: TaggingProps) => {
+    const router = useRouter()
 
-class Tagging extends Component<TaggingProps, TaggingState> {
-    // Local copy of the selected tags, we then mirror to the state every time we hit next/previous
-    selectedTags: number[]
+    const [questionIndex, setQuestionIndex] = useState(0)
+    const incrementQuestionIndex = () => setQuestionIndex(Math.min(questionIndex + 1, props.Questions.length))
+    const decrementQuestionIndex = () => setQuestionIndex(Math.max(questionIndex - 1, 0))
 
-    constructor(props: TaggingProps) {
-        super(props);
-        this.selectedTags = props.SelectedTags
-        this.state = {
-            QuestionIndex: 0,
-            SelectedTags: this.selectedTags,
+    const [selectedTags, setSelectedTags] = useState(props.SelectedTags)
+    const addSelection = (t: number) => {
+        if (selectedTags.indexOf(t) == -1) {
+            setSelectedTags(selectedTags => [...selectedTags, t])
         }
-
-        this.nextClick = this.nextClick.bind(this);
-        this.prevClick = this.prevClick.bind(this);
-        this.saveClick = this.saveClick.bind(this);
-        this.selectionAdded = this.selectionAdded.bind(this);
-        this.selectionRemoved = this.selectionRemoved.bind(this);
-        this.render = this.render.bind(this);
+    }
+    const removeSelection = (t: number) => {
+        if (selectedTags.indexOf(t) != -1) {
+            setSelectedTags(selectedTags => selectedTags.splice(selectedTags.indexOf(t), 1))
+        }
     }
 
-    nextClick() {
-        this.setState({
-            ...this.state,
-            QuestionIndex: Math.min(this.state.QuestionIndex + 1, this.props.Questions.length),
-        })
+    const saveClick = (fileID: string, selectedTags: number[], router: NextRouter) => async () => {
+        await updateFileTags(fileID, selectedTags, true)
+        nextFile(router)
     }
 
-    prevClick() {
-        this.setState({
-            ...this.state,
-            QuestionIndex: Math.max(this.state.QuestionIndex - 1, 0)
-        })
-    }
-
-    async saveClick() {
-        await updateFileTags(this.props.FileID, this.selectedTags, true)
-        window.open("/tagging/newfile", "_self")
-    }
-
-    goHome() {
+    const goHome = (router: NextRouter) => () => {
         var confirmed = confirm("If you are in the middle of tagging a file, the tags will not be saved. Proceed?");
         if (confirmed) {
-            window.open("/", "_self")
+            router.push("/")
         }
     }
 
-    selectionAdded(t: number) {
-        if (this.selectedTags.indexOf(t) == -1) {
-            this.selectedTags.push(t)
-        }
-        this.setState({
-            ...this.state,
-            SelectedTags: this.selectedTags,
-        })
+    const nextFile = (router: NextRouter) => {
+        router.push("/tagging/newfile")
     }
 
-    selectionRemoved(t: number) {
-        if (this.selectedTags.indexOf(t) != -1) {
-            this.selectedTags.splice(this.selectedTags.indexOf(t), 1)
-        }
-        this.setState({
-            ...this.state,
-            SelectedTags: this.selectedTags,
-        })
-    }
-
-    getQuestionSection() {
-        if (this.state.QuestionIndex >= this.props.Questions.length) {
+    const questionSection = () => {
+        if (questionIndex >= props.Questions.length) {
             return <QuestionComplete />
         }
-        return <QuestionSelect question={this.props.Questions[this.state.QuestionIndex]} selectionAdded={this.selectionAdded} selectionRemoved={this.selectionRemoved} selectedTags={this.state.SelectedTags} />
+        return <QuestionSelect question={props.Questions[questionIndex]} selectionAdded={addSelection} selectionRemoved={removeSelection} selectedTags={selectedTags} />
     }
 
-    render() {
-        return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
-            <GridItem colSpan={1} w="full" flex="1">
-                <FileRender fileID={this.props.FileID} w="full" h="full" />
-            </GridItem>
-            <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
-                <VStack w="full" padding={3} spacing={10}>
-                    <VStack w="full" align="flex-start">
-                        <Flex w="full" h="fit-content">
-                            <Heading as="h1">Current Image</Heading>
-                            <Spacer />
-                            <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={this.goHome}></IconButton>
-                        </Flex>
-                        <Progress w="full" value={Math.min(this.state.QuestionIndex / this.props.Questions.length, 1.0) * 100} />
-                        <Link href="/tagging/newfile">Skip this image for now</Link>
-                    </VStack>
-                    <Divider />
-                    {this.getQuestionSection()}
-                    <Divider />
-                    <Buttons isFinished={this.state.QuestionIndex >= this.props.Questions.length} canGoBack={this.state.QuestionIndex > 0} onBack={this.prevClick} onNext={this.nextClick} onSave={this.saveClick} />
+    return <SimpleGrid columns={2} columnGap={1} height="100vh" width="100vw" bg="gray.900" gridTemplateColumns="1fr auto">
+        <GridItem colSpan={1} w="full" flex="1">
+            <FileRender fileID={props.FileID} w="full" h="full" />
+        </GridItem>
+        <GridItem colSpan={1} minW="500px" maxW="500px" bg="gray.300">
+            <VStack w="full" padding={3} spacing={10}>
+                <VStack w="full" align="flex-start">
+                    <Flex w="full" h="fit-content">
+                        <Heading as="h1">Current Image</Heading>
+                        <Spacer />
+                        <IconButton icon={<FaHome />} fontSize="30px" aria-label="home" onClick={goHome(router)}></IconButton>
+                    </Flex>
+                    <Progress w="full" value={Math.min(questionIndex / props.Questions.length, 1.0) * 100} />
+                    <Link href="/tagging/newfile" onClick={_ => nextFile(router)}>Skip this image for now</Link>
                 </VStack>
-            </GridItem>
-        </SimpleGrid>
-    }
+                <Divider />
+                {questionSection()}
+                <Divider />
+                <Buttons isFinished={questionIndex >= props.Questions.length} canGoBack={questionIndex > 0} onBack={decrementQuestionIndex} onNext={incrementQuestionIndex} onSave={saveClick(props.FileID, selectedTags, router)} />
+            </VStack>
+        </GridItem>
+    </SimpleGrid>
 }
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {

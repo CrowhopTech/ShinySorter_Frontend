@@ -1,32 +1,32 @@
-import { GetServerSideProps } from "next"
-import { FileQuery, listFiles } from "../../../src/rest/files"
+import { HStack, Spinner, Text } from "@chakra-ui/react"
+import { useRouter } from "next/router"
+import { FileQuery, useFiles } from "../../../src/rest/files"
 
-const Index = () => { }
+const Index: React.FC = () => {
+    const router = useRouter()
 
-export const getServerSideProps: GetServerSideProps = async (context) => {
-    // TODO: select a new random image and redirect to it
-    const images = await listFiles(new FileQuery(undefined, undefined, undefined, undefined, false))
-    if (images == null) {
-        throw new Error("images is null")
+    const { files, isLoading, err } = useFiles(new FileQuery(undefined, undefined, undefined, undefined, false))
+
+    if (isLoading) {
+        return <Spinner />
     }
 
-    if (images.length == 0) {
-        return {
-            redirect: {
-                destination: "/tagging/nofiles",
-                permanent: false,
-            }
-        }
+    if (!isLoading && err) {
+        return <Text>Failed to get untagged files: {err}</Text>
     }
 
-    const index = Math.min(Math.round(Math.random() * (images.length - 1)), images.length - 1)
-    const file = images[index]
-    return {
-        redirect: {
-            destination: file.id,
-            permanent: false,
-        }
+    if (files.length == 0) {
+        router.push("/tagging/nofiles")
+        return <Spinner />
     }
+
+    const index = Math.min(Math.round(Math.random() * (files.length - 1)), files.length - 1)
+    const file = files[index]
+    router.push(`/tagging/${file.id}`)
+    return <HStack>
+        <Text>Taking you to a new page...</Text>
+        <Spinner />
+    </HStack>
 }
 
 export default Index
